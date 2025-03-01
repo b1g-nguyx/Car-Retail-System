@@ -1,0 +1,125 @@
+@model CarViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<!-- Thêm Bootstrap -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+<div class="container mt-4">
+    <h1 class="mb-3 text-center">Car Details</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white text-center">
+            <h4>@Model.Brand.Name @Model.Model (@Model.Year)</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-5">Brand:</dt>
+                        <dd class="col-sm-7">@Model.Brand.Name</dd>
+
+                        <dt class="col-sm-5">Category:</dt>
+                        <dd class="col-sm-7">@Model.Category.Name</dd>
+
+                        <dt class="col-sm-5">Model:</dt>
+                        <dd class="col-sm-7">@Model.Model</dd>
+
+                        <dt class="col-sm-5">Year:</dt>
+                        <dd class="col-sm-7">@Model.Year</dd>
+
+                        <dt class="col-sm-5">Price Per Day:</dt>
+                        <dd class="col-sm-7 text-danger fw-bold">@Model.PricePerDay$</dd>
+
+                        <dt class="col-sm-5">Availability:</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.Availability)
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Not Available</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">License Plates:</dt>
+                        <dd class="col-sm-7">@Model.LicensePlates</dd>
+
+                        <dt class="col-sm-5">Kilometers:</dt>
+                        <dd class="col-sm-7">@Model.Kilometers km</dd>
+
+                        <dt class="col-sm-5">Fuel Type:</dt>
+                        <dd class="col-sm-7">@Model.FuelType</dd>
+
+                        <dt class="col-sm-5">Transmission:</dt>
+                        <dd class="col-sm-7">@Model.Transmission</dd>
+
+                        <dt class="col-sm-5">Seats:</dt>
+                        <dd class="col-sm-7">@Model.Seats seats</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-center">Car Images</h5>
+                    @if (Model.Images != null && Model.Images.Any())
+                    {
+                        <div class="row g-2">
+                            @foreach (var image in Model.Images)
+                            {
+                                <div class="col-6">
+                                    <img src="@image.ImageUrl" class="img-fluid rounded shadow-sm" 
+                                         alt="Car Image" 
+                                         style="max-height: 150px; width: 100%; object-fit: cover; cursor: pointer;"
+                                         data-bs-toggle="modal" data-bs-target="#imageModal"
+                                         onclick="showImage('@image.ImageUrl')" />
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">No images available</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Description Section -->
+            <div class="mt-4">
+                <h5 class="text-primary">Description</h5>
+                <p class="text-muted">@Model.Description</p>
+            </div>
+        </div>
+        
+        <div class="card-footer text-center">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal hiển thị ảnh lớn -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Car Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" class="img-fluid rounded shadow" alt="Full Size Image">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script hiển thị ảnh trong modal -->
+<script>
+    function showImage(imageUrl) {
+        document.getElementById('modalImage').src = imageUrl;
+    }
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

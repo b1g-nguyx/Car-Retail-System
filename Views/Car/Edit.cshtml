@@ -1,0 +1,158 @@
+@model CarViewModel
+
+@{
+    ViewData["Title"] = "Edit Car";
+}
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+<!-- Dropzone CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css">
+
+<div class="container mt-4">
+    <h1 class="text-center">Edit Car</h1>
+
+    <div class="card shadow-sm p-4">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="BrandId" class="form-label">Brand</label>
+                        <select asp-for="BrandId" class="form-select" asp-items="@(new SelectList(Model.Brands, "Id", "Name", Model.BrandId))"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="CategoryId" class="form-label">Category</label>
+                        <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(Model.Categories, "Id", "Name", Model.CategoryId))"></select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Model" class="form-label">Model</label>
+                        <input asp-for="Model" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Year" class="form-label">Year</label>
+                        <input asp-for="Year" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PricePerDay" class="form-label">Price Per Day</label>
+                        <input asp-for="PricePerDay" class="form-control" />
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="Availability" />
+                        <label class="form-check-label" asp-for="Availability">Available</label>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description</label>
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="LicensePlates" class="form-label">License Plates</label>
+                        <input asp-for="LicensePlates" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Kilometers" class="form-label">Kilometers</label>
+                        <input asp-for="Kilometers" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="FuelType" class="form-label">Fuel Type</label>
+                        <input asp-for="FuelType" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Transmission" class="form-label">Transmission</label>
+                        <input asp-for="Transmission" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Seats" class="form-label">Seats</label>
+                        <input asp-for="Seats" class="form-control" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hiển thị ảnh đã có -->
+            <div class="mb-3">
+                <label class="form-label">Existing Images</label>
+                <div class="d-flex flex-wrap" id="existingImages">
+                    @if (Model.Images != null && Model.Images.Any())
+                    {
+                        @foreach (var img in Model.Images)
+                        {
+                            <div class="m-2 position-relative" id="img-@img.Id">
+                                <img src="@img.ImageUrl" width="100" height="100" class="rounded shadow-sm" />
+                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" onclick="removeImage(@img.Id)"> 
+                                    &times;
+                                </button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No images available.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Upload ảnh mới -->
+            <div class="mb-3">
+                <label class="form-label">Upload New Images</label>
+                <div id="dropzoneForm" class="dropzone border rounded p-3"></div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<!-- Dropzone JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<script>
+    Dropzone.autoDiscover = false;
+
+    var myDropzone = new Dropzone("#dropzoneForm", {
+        url: "/Car/UploadImages", // Đổi URL phù hợp với Controller của bạn
+        paramName: "files", 
+        maxFilesize: 2, // Giới hạn 2MB/file
+        maxFiles: 5, // Tối đa 5 ảnh
+        acceptedFiles: "image/*",
+        addRemoveLinks: true,
+        dictDefaultMessage: "Drag & drop or click to upload images",
+
+        success: function (file, response) {
+            console.log("File uploaded:", response);
+        },
+        removedfile: function (file) {
+            file.previewElement.remove();
+        }
+    });
+
+    function removeImage(imageId) {
+        if (confirm("Are you sure you want to delete this image?")) {
+            fetch(`/Car/DeleteImage/${imageId}`, {
+                method: "DELETE"
+            }).then(response => {
+                if (response.ok) {
+                    document.getElementById(`img-${imageId}`).remove();
+                }
+            });
+        }
+    }
+</script>
