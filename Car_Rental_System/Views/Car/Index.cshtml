@@ -1,0 +1,88 @@
+@model X.PagedList.IPagedList<Car_Rental_System.ViewModels.CarViewModel>
+@using X.PagedList.Mvc.Core
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="text-2xl font-bold mb-4">Car List</h1>
+
+<!-- Search and Create in one row -->
+<div class="flex justify-between items-center mb-4">
+    <form asp-action="Index" method="get" class="flex gap-2">
+        <input type="text" name="searchString" class="border border-gray-300 rounded px-3 py-2" placeholder="Search..." value="@ViewData["CurrentFilter"]" />
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Search</button>
+        <a asp-action="Index" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700 transition">Reset</a>
+    </form>
+    <a asp-action="Create" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition">Create New</a>
+</div>
+
+<table class="min-w-full bg-white border border-gray-300">
+    <thead class="bg-gray-100">
+        <tr>
+            <th class="border px-4 py-2">Image</th>
+            <th class="border px-4 py-2">Brand Name</th>
+            <th class="border px-4 py-2">Category Name</th>
+            <th class="border px-4 py-2">Model</th>
+            <th class="border px-4 py-2">Year</th>
+            <th class="border px-4 py-2">Price Per Day</th>
+            <th class="border px-4 py-2">Availability</th>
+            <th class="border px-4 py-2">Description</th>
+            <th class="border px-4 py-2">License Plates</th>
+            <th class="border px-4 py-2">Kilometers</th>
+            <th class="border px-4 py-2">Fuel Type</th>
+            <th class="border px-4 py-2">Transmission</th>
+            <th class="border px-4 py-2">Seats</th>
+            <th class="border px-4 py-2">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-2 text-center">
+                    @if (item.Images != null && item.Images.Any())
+                    {
+                        <img src="@item.Images.First().ImageUrl" alt="Car Image" class="w-24 h-auto rounded-md" />
+                    }
+                    else
+                    {
+                        <span>No Image</span>
+                    }
+                </td>
+                <td class="border px-4 py-2">@item.Car.Brand.Name</td>
+                <td class="border px-4 py-2">@item.Car.Category.Name</td>
+                <td class="border px-4 py-2">@item.Car.Model</td>
+                <td class="border px-4 py-2">@item.Car.Year</td>
+                <td class="border px-4 py-2">@item.Car.PricePerDay</td>
+                <td class="border px-4 py-2">@item.Car.Status.ToString()</td>
+                <td class="border px-4 py-2">@Html.Raw(item.Car.Description.Length > 100 ? item.Car.Description.Substring(0, 100) + "..." : item.Car.Description)</td>
+                <td class="border px-4 py-2">@item.Car.LicensePlates</td>
+                <td class="border px-4 py-2">@item.Car.Kilometers</td>
+                <td class="border px-4 py-2">@item.Car.FuelType</td>
+                <td class="border px-4 py-2">@item.Car.Transmission</td>
+                <td class="border px-4 py-2">@item.Car.Seats</td>
+                <td class="border px-4 py-2 flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@item.Car.Id" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700 transition">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Car.Id" class="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-700 transition">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Car.Id" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700 transition">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+<div class="mt-4 flex justify-center">
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewData["CurrentFilter"] }),
+    new PagedListRenderOptions
+    {
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        UlElementClasses = new[] { "flex space-x-2" },
+        LiElementClasses = new[] { "px-3 py-1 border rounded bg-gray-100 hover:bg-gray-300" },
+        PageClasses = new[] { "text-blue-500 hover:text-blue-700" }
+    })
+</div>

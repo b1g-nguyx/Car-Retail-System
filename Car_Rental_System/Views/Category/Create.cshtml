@@ -1,0 +1,83 @@
+@model Car_Rental_System.ViewModels.CategoryViewModel
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Create Category";
+}
+
+<div class="max-w-4xl mx-auto mt-6 p-6 bg-white shadow-lg rounded-lg">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Create Category</h2>
+    
+    <form asp-action="Create" asp-controller="Category" id="categoryForm" enctype="multipart/form-data" class="space-y-4">
+        <div>
+            <label asp-for="Category.Name" class="block text-sm font-medium text-gray-700">Category Name</label>
+            <input asp-for="Category.Name" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500" placeholder="Enter category name" />
+            <span asp-validation-for="Category.Name" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <input type="checkbox" asp-for="Category.IsActive" id="isActiveCheckbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
+            <label for="isActiveCheckbox" class="text-sm text-gray-700">Is Active</label>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Upload Images</label>
+            <div id="dropzoneForm" class="dropzone border-2 border-dashed border-gray-300 p-6 text-center rounded-lg bg-gray-50">
+            </div>
+            <span id="imageError" class="text-red-500 text-sm hidden">Please add at least one image.</span>
+        </div>
+
+        <div class="flex justify-end">
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                <i class="fas fa-plus-circle"></i> Create Category
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Dropzone.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<script>
+    Dropzone.autoDiscover = false;
+
+    var myDropzone = new Dropzone("#dropzoneForm", {
+        url: "#",
+        autoProcessQueue: false,
+        acceptedFiles: "image/*",
+        addRemoveLinks: true,
+        dictRemoveFile: "Remove",
+        init: function () {
+            let dz = this;
+
+            document.querySelector("#categoryForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                let formData = new FormData(this);
+                dz.files.forEach((file, index) => {
+                    formData.append("files", file, file.name);
+                });
+
+                fetch(this.action, {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert("Category created successfully!");
+                        window.location.href = "/Category/Index";
+                    })
+                    .catch(error => console.error("Error:", error));
+            });
+
+            dz.on("addedfile", function (file) {
+                console.log("File added:", file.name);
+            });
+
+            dz.on("removedfile", function (file) {
+                console.log("File removed:", file.name);
+            });
+        }
+    });
+</script>

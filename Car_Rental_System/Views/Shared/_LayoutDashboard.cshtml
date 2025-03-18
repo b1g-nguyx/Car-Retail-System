@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex">
+
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-900 text-white min-h-screen p-5">
+        <h2 class="text-2xl font-bold mb-5">Dashboard</h2>
+        <nav>
+            @if (User.IsInRole("Admin"))
+            {
+                <a href="@Url.Action("Index", "UserManagement")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
+                        class="fas fa-home"></i>Tài khoản</a>
+            }
+            @if (User.IsInRole("Manager"))
+            {
+                <a href="@Url.Action("Index", "Car")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
+                        class="fas fa-chart-bar"></i>Xe</a>
+                <a href="@Url.Action("Index", "Category")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
+                        class="fas fa-cog"></i>Loại xe</a>
+                <a href="@Url.Action("Index", "Brand")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
+                        class="fas fa-cog"></i>Hãng xe</a>
+            }
+            @if (User.IsInRole("Staff") || User.IsInRole("Manager"))
+            {
+                <a href="@Url.Action("Index", "Contract")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
+                        class="fas fa-cog"></i>Hợp đồng thuê xe</a>
+                <a href="@Url.Action("Index", "CarRental")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
+                        class="fas fa-cog"></i>Xe thuê</a>
+                <a href="@Url.Action("Index", "ConfirmProfile")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
+                        class="fas fa-cog"></i>Xác minh thông tin người dùng</a>
+            }
+            <form asp-action="Logout" asp-controller="Account" method="post">
+                <button type="submit">Đăng xuất</button>
+            </form>
+
+        </nav>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1">
+        <nav class="bg-white shadow p-4">
+            <span class="text-xl font-semibold">Dashboard Panel</span>
+        </nav>
+        <div class="p-6">
+            @RenderBody()
+        </div>
+    </div>
+
+</body>
+@RenderSection("Scripts", required: false)
+
+</html>

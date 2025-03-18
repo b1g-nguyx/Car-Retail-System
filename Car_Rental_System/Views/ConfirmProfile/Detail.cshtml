@@ -1,0 +1,50 @@
+@model Car_Rental_System.Models.Profile
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Profile Detail";
+}
+
+<div class="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Profile Detail</h1>
+
+    <div class="bg-gray-100 p-4 rounded-lg">
+        <h3 class="text-lg font-semibold text-gray-700">Thông tin profile của @Model.FullName</h3>
+        <p class="mt-2 text-gray-600"><strong class="text-gray-700">Địa chỉ:</strong> @Model.Address</p>
+        <p class="mt-2 text-gray-600"><strong class="text-gray-700">Số điện thoại:</strong> @Model.PhoneNumber</p>
+
+        <div class="mt-4">
+            <p class="text-gray-700 font-semibold">Ảnh đại diện:</p>
+            <img src="@Model.AvatarUrl" alt="Avatar"
+                class="mt-2 w-32 h-32 rounded-full shadow-md border border-gray-300" />
+        </div>
+
+        <div class="mt-4">
+            <p class="text-gray-700 font-semibold">Ảnh bằng lái xe:</p>
+            <img src="@Model.DrivingLicense" alt="Driving License"
+                class="mt-2 w-64 h-40 rounded-lg shadow-md border border-gray-300" />
+        </div>
+
+        <p class="mt-4 text-gray-600">
+            <strong class="text-gray-700">Xác thực tài khoản:</strong>
+            <span
+                class="px-2 py-1 rounded-md  text-white text-sm font-medium @((Model.IsConfirm != null) && (Model.IsConfirm == true) ? "bg-green-500" : "bg-red-500")">
+                @((Model.IsConfirm != null) && (Model.IsConfirm == true) ? "Đã xác thực" : "Chưa xác thực")
+            </span>
+        </p>
+    </div>
+
+    <div class="mt-6 flex gap-4">
+        <form method="post" asp-action="ConfirmProfile">
+            <input type="hidden" name="UserId" value="@Model.UserId">
+            <button type="submit" 
+                class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600">
+                Xác thực
+            </button>
+        </form>
+
+        <a asp-action="Index" class="px-4 py-2 bg-gray-400 text-white font-semibold rounded-md hover:bg-gray-500">
+            Back to List
+        </a>
+    </div>
+</div>

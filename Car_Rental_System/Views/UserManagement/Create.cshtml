@@ -1,0 +1,60 @@
+@model Car_Rental_System.ViewModels.RegisterModel
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Tạo tài khoản mới";
+}
+
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <div class="bg-white p-6 rounded-lg shadow-md w-full max-w-lg">
+        <h2 class="text-2xl font-bold mb-4 text-center">@ViewData["Title"]</h2>
+
+        <form asp-action="Create" method="post">
+            <div class="mb-4">
+                <label asp-for="FullName" class="block text-gray-700 font-semibold mb-1"></label>
+                <input asp-for="FullName" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="FullName" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="DateOfBirth" class="block text-gray-700 font-semibold mb-1"></label>
+                <input asp-for="DateOfBirth" type="date" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="DateOfBirth" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Gender" class="block text-gray-700 font-semibold mb-1"></label>
+                <select asp-for="Gender" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Chọn giới tính --</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Email" class="block text-gray-700 font-semibold mb-1"></label>
+                <input asp-for="Email" type="email" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Password" class="block text-gray-700 font-semibold mb-1"></label>
+                <input asp-for="Password" type="password" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="block text-gray-700 font-semibold mb-1"></label>
+                <input asp-for="ConfirmPassword" type="password" class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="ConfirmPassword" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Tạo tài khoản</button>
+                <a asp-action="Index" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Quay lại</a>
+            </div>
+        </form>
+    </div>
+</div>

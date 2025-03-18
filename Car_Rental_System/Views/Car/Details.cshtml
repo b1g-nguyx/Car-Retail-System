@@ -1,0 +1,124 @@
+@model Car_Rental_System.ViewModels.CarViewModel
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Thông tin xe";
+}
+
+<div class="container mx-auto mt-4 p-4">
+    <h1 class="text-2xl font-bold text-center mb-4">Thông tin xe</h1>
+
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="bg-blue-600 text-white text-center py-4">
+            <h4 class="text-lg font-semibold">@Model.Car.Brand.Name @Model.Car.Model (@Model.Car.Year)</h4>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <dl class="space-y-2">
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Hãng xe:</dt>
+                            <dd>@Model.Car.Brand.Name</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Dòng xe:</dt>
+                            <dd>@Model.Car.Category.Name</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Model:</dt>
+                            <dd>@Model.Car.Model</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Năm sản xuất:</dt>
+                            <dd>@Model.Car.Year</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Giá thuê mỗi ngày:</dt>
+                            <dd class="text-red-600 font-bold">@Model.Car.PricePerDay VND</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Trạng thái:</dt>
+                            <dd>
+                                <span class="px-2 py-1 rounded">@Model.Car.Status.ToString()</span>
+                            </dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Biển số:</dt>
+                            <dd>@Model.Car.LicensePlates</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">số ODO:</dt>
+                            <dd>@Model.Car.Kilometers km</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Nhiên liệu:</dt>
+                            <dd>@Model.Car.FuelType</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Truyền động:</dt>
+                            <dd>@Model.Car.Transmission</dd>
+                        </div>
+                        <div class="flex justify-between">
+                            <dt class="font-semibold">Số ghế:</dt>
+                            <dd>@Model.Car.Seats seats</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div>
+                    <h5 class="text-lg font-semibold text-center">Ảnh xe</h5>
+                    @if (Model.Images != null && Model.Images.Any())
+                    {
+                        <div class="grid grid-cols-2 gap-2 mt-4">
+                            @foreach (var image in Model.Images)
+                            {
+                                <div>
+                                    <img src="@image.ImageUrl" class="w-full h-36 object-cover rounded shadow-md cursor-pointer" 
+                                         alt="Car Image" onclick="showImage('@image.ImageUrl')" />
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-gray-500 text-center mt-4">No images available</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Description Section -->
+            <div class="mt-6">
+                <h5 class="text-lg font-semibold text-blue-600">Description</h5>
+                <p class="text-gray-700 mt-2">@Html.Raw(Model.Car.Description)</p>
+            </div>
+        </div>
+        
+        <div class="bg-gray-100 p-4 text-center">
+            <a asp-action="Edit" asp-route-id="@Model.Car.Id" class="bg-yellow-500 text-white px-4 py-2 rounded">Edit</a>
+            <a asp-action="Index" class="bg-gray-500 text-white px-4 py-2 rounded">Back to List</a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal hiển thị ảnh lớn -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center">
+    <div class="bg-white rounded-lg overflow-hidden shadow-lg max-w-2xl">
+        <div class="p-4 flex justify-between items-center">
+            <h5 class="text-lg font-semibold">Car Image</h5>
+            <button class="text-red-600 text-xl" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="p-4 text-center">
+            <img id="modalImage" src="" class="w-full rounded shadow-md" alt="Full Size Image">
+        </div>
+    </div>
+</div>
+
+<!-- Script hiển thị ảnh trong modal -->
+<script>
+    function showImage(imageUrl) {
+        document.getElementById('modalImage').src = imageUrl;
+        document.getElementById('imageModal').classList.remove('hidden');
+    }
+    function closeModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+    }
+</script>

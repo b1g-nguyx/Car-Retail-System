@@ -1,0 +1,80 @@
+@model Car_Rental_System.ViewModels.CategoryViewModel
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Delete Category";
+}
+
+<div class="container mx-auto mt-4">
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <div class="bg-red-600 text-white p-4 rounded-t-lg">
+            <h2 class="text-lg font-semibold">Delete Category</h2>
+        </div>
+        <div class="p-6">
+            <p class="text-red-600 text-lg font-medium flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-12.728 12.728M5.636 5.636l12.728 12.728" />
+                </svg>
+                Bạn có chắc chắn muốn xóa danh mục này không?
+            </p>
+            <hr class="my-4 border-gray-300" />
+
+            <div class="mb-3">
+                <strong class="font-semibold">Tên danh mục:</strong> @Model.Category.Name
+            </div>
+            <div class="mb-3">
+                <strong class="font-semibold">Trạng thái:</strong> @(Model.Category.IsActive ? "Hoạt động" : "Không hoạt động")
+            </div>
+            <div class="mb-3">
+                <strong class="font-semibold">Ngày tạo:</strong> @Model.Category.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+            </div>
+
+            <!-- Hiển thị ảnh -->
+            <div class="mb-3">
+                <strong class="font-semibold">Hình ảnh:</strong>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                    @foreach (var image in Model.Images)
+                    {
+                        <div class="">
+                            <img src="@image.ImageUrl" class="rounded-lg shadow-md cursor-pointer" data-img="@image.ImageUrl" onclick="showImage('@image.ImageUrl')" />
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <form asp-action="Delete" asp-route-id="@Model.Category.Id" method="post">
+                <div class="flex justify-between mt-4">
+                    <a asp-action="Index" class="bg-gray-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-gray-700 transition">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                    <button type="submit" class="bg-red-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-800 transition">
+                        <i class="fas fa-trash-alt"></i> Xóa
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal hiển thị ảnh -->
+<div id="imageModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-lg shadow-lg max-w-md">
+        <div class="flex justify-between items-center mb-2">
+            <h5 class="text-lg font-semibold">Xem ảnh</h5>
+            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-800">✖</button>
+        </div>
+        <img id="modalImage" class="rounded-lg shadow-md" src="" alt="Image Preview">
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showImage(imageUrl) {
+            document.getElementById('modalImage').src = imageUrl;
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+    </script>
+}

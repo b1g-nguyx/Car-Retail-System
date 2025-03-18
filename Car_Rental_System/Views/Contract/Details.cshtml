@@ -1,0 +1,60 @@
+@model Car_Rental_System.ViewModels.ContractViewModel
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Contracts";
+}
+
+<div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Contract Details</h2>
+    <div class="border-t border-gray-300 pt-4">
+        <dl class="grid grid-cols-2 gap-4">
+            <dt class="font-medium text-gray-700">ID</dt>
+            <dd class="text-gray-900">@Model.Contract.Id</dd>
+
+            <dt class="font-medium text-gray-700">Full Name</dt>
+            <dd class="text-gray-900">@Model.Contract.FullName</dd>
+
+            <dt class="font-medium text-gray-700">Start Date</dt>
+            <dd class="text-gray-900">@Model.Contract.StartDate.ToString("d")</dd>
+
+            <dt class="font-medium text-gray-700">End Date</dt>
+            <dd class="text-gray-900">@Model.Contract.EndDate.ToString("d")</dd>
+
+            <dt class="font-medium text-gray-700">Email</dt>
+            <dd class="text-gray-900">@Model.Contract.Email</dd>
+
+            <dt class="font-medium text-gray-700">Phone Number</dt>
+            <dd class="text-gray-900">@Model.Contract.PhoneNumber</dd>
+
+            <dt class="font-medium text-gray-700">Address</dt>
+            <dd class="text-gray-900">@Model.Contract.Address</dd>
+
+            <dt class="font-medium text-gray-700">Tax Code</dt>
+            <dd class="text-gray-900">@Model.Contract.TaxCode</dd>
+
+            <dt class="font-medium text-gray-700">Total Price</dt>
+            <dd class="text-gray-900">@Model.Contract.TotalPrice.ToString("C")</dd>
+
+            <dt class="font-medium text-gray-700">Deposit</dt>
+            <dd class="text-gray-900">@Model.Contract.Deposit.ToString("C")</dd>
+
+            <dt class="font-medium text-gray-700">Status</dt>
+            <dd class="text-gray-900">@Model.Contract.Status</dd>
+
+            <dt class="font-medium text-gray-700">Created At</dt>
+            <dd class="text-gray-900">@Model.Contract.CreatedAt.ToString("g")</dd>
+        </dl>
+        <div class="mt-4">
+            <label class="block font-medium text-gray-700">Ảnh bằng lái xe</label>
+            <img src="@Model.imgaeDriver" alt="Bằng lái xe" class="mt-2 w-48 h-auto rounded-md shadow">
+        </div>
+    </div>
+    <div class="mt-6 flex space-x-4">
+        <form method="post" asp-action="CreateContract" asp-controller="Contract">
+            <input type="hidden" name="contractId" value="@Model.Contract.Id" />
+            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow">Create</button>
+        </form>
+        <a asp-action="Index" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg shadow">Back to List</a>
+    </div>
+</div>

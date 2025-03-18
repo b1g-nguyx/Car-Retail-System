@@ -1,0 +1,201 @@
+@model Car_Rental_System.ViewModels.CarViewModel
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Edit Car";
+}
+
+<!-- Dropzone CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<div class="container mx-auto mt-4 p-4">
+    <h1 class="text-center text-2xl font-bold">Edit Car</h1>
+
+    <div class="bg-white shadow-md rounded-lg p-6">
+        <form asp-action="Edit" id="carForm" enctype="multipart/form-data" class="space-y-4">
+            <input type="hidden" asp-for="Car.Id" />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label asp-for="Car.BrandId" class="block font-medium">Brand</label>
+                    <select asp-for="Car.BrandId" class="w-full p-2 border rounded"
+                        asp-items="@(new SelectList(Model.Brands, "Id", "Name", Model.Car.BrandId))"></select>
+                </div>
+
+                <div>
+                    <label asp-for="Car.CategoryId" class="block font-medium">Category</label>
+                    <select asp-for="Car.CategoryId" class="w-full p-2 border rounded"
+                        asp-items="@(new SelectList(Model.Categories, "Id", "Name", Model.Car.CategoryId))"></select>
+                </div>
+
+                <div>
+                    <label asp-for="Car.Model" class="block font-medium">Model</label>
+                    <input asp-for="Car.Model" class="w-full p-2 border rounded" />
+                </div>
+
+                <div>
+                    <label asp-for="Car.Year" class="block font-medium">Year</label>
+                    <input asp-for="Car.Year" class="w-full p-2 border rounded" />
+                </div>
+
+                <div>
+                    <label asp-for="Car.PricePerDay" class="block font-medium">Price Per Day</label>
+                    <input asp-for="Car.PricePerDay" class="w-full p-2 border rounded" />
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <label asp-for="Car.Status" class="block font-medium">Trạng thái</label>
+                    <select asp-for="Car.Status" class="w-full p-2 border border-gray-300 rounded-md"
+                        asp-items="Model.RentalStatuses"></select>
+                </div>
+
+                <div>
+                    <label asp-for="Car.Description" class="block font-medium">Thông tin xe</label>
+                    <textarea asp-for="Car.Description" class="w-full p-2 border rounded"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label asp-for="Car.LicensePlates" class="block font-medium">Biển số:</label>
+                        <input asp-for="Car.LicensePlates" class="w-full p-2 border rounded" />
+                    </div>
+
+                    <div>
+                        <label asp-for="Car.Kilometers" class="block font-medium">Số ODO:</label>
+                        <input asp-for="Car.Kilometers" class="w-full p-2 border rounded" />
+                    </div>
+
+                    <div>
+                        <label asp-for="Car.FuelType" class="block font-semibold"></label>
+                        <select asp-for="Car.FuelType" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="">Select Fuel Type</option>
+                            <option value="Gasoline">Gasoline</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="Electric">Electric</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label asp-for="Car.Transmission" class="block font-semibold"></label>
+                        <select asp-for="Car.Transmission" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="">Select Transmission</option>
+                            <option value="Automatic">Automatic</option>
+                            <option value="Manual">Manual</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label asp-for="Car.Seats" class="block font-medium">Số ghế</label>
+                        <input asp-for="Car.Seats" class="w-full p-2 border rounded" />
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium">Ảnh hiện có</label>
+                    <div class="flex flex-wrap space-x-2" id="existingImages">
+                        @if (Model.Images != null && Model.Images.Any())
+                        {
+                            @foreach (var img in Model.Images)
+                            {
+                                <div class="relative w-24 h-24">
+                                    <img src="@img.ImageUrl" class="w-full h-full object-cover rounded shadow-md" />
+                                    <button type="button" class="absolute top-0 right-0 bg-red-500 text-white rounded p-1"
+                                        onclick="removeImage(@img.Id)">×</button>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p>No images available.</p>
+                        }
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-medium">Thêm Ảnh mới</label>
+                    <div id="dropzoneForm" class="dropzone border border-dashed rounded p-6 text-center">
+                        <div class="dz-message">Kéo thả hoặc ấn để chọn</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center space-x-4">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Lưu</button>
+                    <a asp-action="Index" class="bg-gray-500 text-white px-4 py-2 rounded">Quay lại</a>
+                </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- Place the first <script> tag in your HTML's <head> -->
+<script src="https://cdn.tiny.cloud/1/8frck4q2kk9c85j655m6akj55jkjryl3mc9dg2mj7qbshpua/tinymce/7/tinymce.min.js"
+    referrerpolicy="origin"></script>
+
+<!-- Place the following <script> and <textarea> tags your HTML's <body> -->
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        plugins: [
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+            'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+        ],
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+        ],
+        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant'))
+    });
+
+    // Đảm bảo TinyMCE cập nhật nội dung vào textarea trước khi submit form
+    document.getElementById("carForm").addEventListener("submit", function () {
+        tinymce.triggerSave();
+    });
+</script>
+
+<script>
+    Dropzone.autoDiscover = false;
+
+    var myDropzone = new Dropzone("#dropzoneForm", {
+        url: "#",
+        autoProcessQueue: false,
+        acceptedFiles: "image/*",
+        addRemoveLinks: true,
+        dictRemoveFile: "Remove",
+        init: function () {
+            let dz = this;
+            document.querySelector("#carForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+                let formData = new FormData(this);
+                dz.files.forEach((file) => {
+                    formData.append("files", file, file.name);
+                });
+                fetch(this.action, {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(() => {
+                        alert("Car updated successfully!");
+                        window.location.href = "/Car/Index";
+                    })
+                    .catch(error => console.error("Error:", error));
+            });
+        }
+    });
+
+    function removeImage(imageId) {
+        if (confirm("Are you sure you want to delete this image?")) {
+            fetch(`/Car/DeleteImage/${imageId}`, { method: "DELETE" })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById(`img-${imageId}`).remove();
+                    }
+                });
+        }
+    }
+</script>

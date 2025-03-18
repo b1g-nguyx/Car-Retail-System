@@ -1,0 +1,95 @@
+@model Car_Rental_System.ViewModels.BrandViewModel
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Create";
+}
+
+<h1 class="text-2xl font-bold">Create</h1>
+
+<h4 class="text-lg font-semibold">Brand</h4>
+<hr class="my-4" />
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+        <form asp-action="Create" id="brandForm" enctype="multipart/form-data" class="space-y-4">
+            <div asp-validation-summary="ModelOnly" class="text-red-500"></div>
+
+            <div>
+                <label asp-for="@Model.Brand.Name" class="block text-sm font-medium text-gray-700"></label>
+                <input asp-for="@Model.Brand.Name"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
+                <span asp-validation-for="@Model.Brand.Name" class="text-red-500 text-sm"></span>
+            </div>
+
+            <div class="flex items-center">
+                <input class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" type="checkbox"
+                    asp-for="@Model.Brand.IsActive" />
+                <label class="ml-2 text-sm text-gray-700">@Html.DisplayNameFor(model => model.Brand.IsActive)</label>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 font-bold">Upload Images</label>
+                <div id="dropzoneForm"
+                    class="dropzone border border-gray-300 rounded-lg p-3 text-center cursor-pointer bg-gray-100 hover:bg-gray-200">
+                </div>
+            </div>
+
+            <div>
+                <input type="submit" value="Create"
+                    class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="text-indigo-600 hover:underline">Back to List</a>
+</div>
+
+<!-- Dropzone.js -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.js"></script>
+
+<script>
+    Dropzone.autoDiscover = false;
+
+    var myDropzone = new Dropzone("#dropzoneForm", {
+        url: "#",
+        autoProcessQueue: false,
+        acceptedFiles: "image/*",
+        addRemoveLinks: true,
+        dictRemoveFile: "Remove",
+        init: function () {
+            let dz = this;
+
+            document.querySelector("#brandForm").addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                let formData = new FormData(this);
+                dz.files.forEach((file, index) => {
+                    formData.append("files", file, file.name);
+                });
+
+                fetch(this.action, {
+                    method: "POST",
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        alert("Thương hiệu được khởi tạo thành công!");
+                        window.location.href = "/Brand/Index";
+                    })
+                    .catch(error => console.error("Error:", error));
+            });
+
+            dz.on("addedfile", function (file) {
+                console.log("File added:", file.name);
+            });
+
+            dz.on("removedfile", function (file) {
+                console.log("File removed:", file.name);
+            });
+        }
+    });
+</script>

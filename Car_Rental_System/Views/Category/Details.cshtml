@@ -1,0 +1,64 @@
+@model Car_Rental_System.ViewModels.CategoryViewModel
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Category Details";
+}
+
+<div class="container mx-auto p-6">
+    <div class="bg-white shadow-lg rounded-lg p-6">
+        <div class="bg-blue-500 text-white px-4 py-2 rounded-t-lg">
+            <h2 class="text-lg font-semibold">Category Details</h2>
+        </div>
+        <div class="p-4 space-y-4">
+            <div><strong>Tên danh mục:</strong> @Model.Category.Name</div>
+            <div><strong>Trạng thái:</strong> @(Model.Category.IsActive ? "Hoạt động" : "Không hoạt động")</div>
+            <div><strong>Ngày tạo:</strong> @Model.Category.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+            <div><strong>Ngày cập nhật:</strong> @Model.Category.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+            <div><strong>Người tạo:</strong> @Model.Category.CreatedBy</div>
+            <div><strong>Người cập nhật:</strong> @Model.Category.UpdatedBy</div>
+
+            <div>
+                <strong>Hình ảnh:</strong>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+                    @if (Model.Images.Any())
+                    {
+                        @foreach (var image in Model.Images)
+                        {
+                            <div class="relative">
+                                <img src="@image.ImageUrl" class="w-full h-32 object-cover rounded-lg cursor-pointer" data-img="@image.ImageUrl" onclick="showImage('@image.ImageUrl')" />
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-gray-500">Chưa có ảnh nào.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-4">
+                <a asp-action="Index" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-700">Quay lại</a>
+                <a asp-action="Edit" asp-route-id="@Model.Category.Id" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-700">Chỉnh sửa</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal hiển thị ảnh lớn -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden" id="imageModal">
+    <div class="bg-white p-4 rounded-lg">
+        <img id="modalImage" class="w-full h-auto rounded-lg" src="" alt="Image Preview">
+        <button onclick="closeModal()" class="mt-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700">Đóng</button>
+    </div>
+</div>
+
+<script>
+    function showImage(imageUrl) {
+        document.getElementById('modalImage').src = imageUrl;
+        document.getElementById('imageModal').classList.remove('hidden');
+    }
+    function closeModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+    }
+</script>

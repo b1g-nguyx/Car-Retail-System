@@ -1,0 +1,105 @@
+@model Car_Rental_System.ViewModels.BrandViewModel
+
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Chi tiết thương hiệu";
+}
+
+<div class="container mx-auto mt-6 p-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Cột trái: Hiển thị thông tin thương hiệu -->
+        <div class="md:col-span-2">
+            <h2 class="text-2xl font-semibold text-blue-600">Chi tiết thương hiệu</h2>
+            <hr class="my-4" />
+            <dl class="grid grid-cols-2 gap-4">
+                <dt class="font-medium">Tên thương hiệu:</dt>
+                <dd class="text-gray-700">@Model.Brand.Name</dd>
+
+                <dt class="font-medium">ID:</dt>
+                <dd class="text-gray-700">@Model.Brand.Id</dd>
+
+                <dt class="font-medium">Trạng thái:</dt>
+                <dd>
+                    @if (Model.Brand.IsActive)
+                    {
+                        <span class="px-3 py-1 bg-green-500 text-white rounded-full text-sm">Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="px-3 py-1 bg-red-500 text-white rounded-full text-sm">Không hoạt động</span>
+                    }
+                </dd>
+
+                <dt class="font-medium">Ngày tạo:</dt>
+                <dd class="text-gray-700">@Model.Brand.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="font-medium">Người tạo:</dt>
+                <dd class="text-gray-700">@Model.Brand.CreatedBy</dd>
+
+                <dt class="font-medium">Cập nhật gần nhất:</dt>
+                <dd class="text-gray-700">@Model.Brand.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="font-medium">Người cập nhật:</dt>
+                <dd class="text-gray-700">@Model.Brand.UpdatedBy</dd>
+            </dl>
+        </div>
+
+        <!-- Cột phải: Hiển thị hình ảnh -->
+        <div>
+            <h4 class="text-lg font-semibold">Hình ảnh</h4>
+            <div class="border p-4 max-h-96 overflow-y-auto rounded-md">
+                @if (Model.Images.Any())
+                {
+                    <div class="flex flex-wrap gap-2">
+                        @foreach (var img in Model.Images)
+                        {
+                            <img src="@img.ImageUrl" class="w-24 h-auto rounded shadow cursor-pointer" onclick="showImage('@img.ImageUrl')" />
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p class="text-gray-500">Không có hình ảnh.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút điều hướng -->
+    <div class="mt-6 flex gap-4">
+        <a asp-action="Index" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+        <a asp-action="Edit" asp-route-id="@Model.Brand.Id" class="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600">
+            <i class="fas fa-edit"></i> Chỉnh sửa
+        </a>
+        <a asp-action="Delete" asp-route-id="@Model.Brand.Id" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+            <i class="fas fa-trash-alt"></i> Xóa
+        </a>
+    </div>
+</div>
+
+<!-- Modal hiển thị ảnh lớn -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center">
+    <div class="bg-white p-4 rounded-lg shadow-lg max-w-2xl w-full">
+        <div class="flex justify-between items-center border-b pb-2">
+            <h5 class="text-lg font-semibold">Car Image</h5>
+            <button class="text-gray-500 hover:text-gray-700" onclick="closeImageModal()">&times;</button>
+        </div>
+        <div class="p-4 flex justify-center">
+            <img id="modalImage" src="" class="max-w-full h-auto rounded shadow" alt="Full Size Image">
+        </div>
+    </div>
+</div>
+
+<!-- Script hiển thị ảnh trong modal -->
+<script>
+    function showImage(imageUrl) {
+        document.getElementById('modalImage').src = imageUrl;
+        document.getElementById('imageModal').classList.remove('hidden');
+    }
+    
+    function closeImageModal() {
+        document.getElementById('imageModal').classList.add('hidden');
+    }
+</script>

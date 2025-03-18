@@ -1,0 +1,133 @@
+@model Car_Rental_System.ViewModels.RegisterModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký</title>
+    @Html.Partial("_PartialScripts")
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .register-card {
+            animation: fadeIn 1s ease-in-out;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control:focus {
+            border-color: #D19C97;
+            box-shadow: 0 0 8px rgba(209, 156, 151, 0.5);
+        }
+
+        .btn-custom {
+            background-color: #D19C97;
+            color: white;
+            transition: 0.3s;
+        }
+
+        .btn-custom:hover {
+            background-color: #B28475;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body class="d-flex justify-content-center align-items-center vh-100">
+
+    <div class="register-card w-25">
+        <h2 class="text-center mb-4" style="color: #D19C97;">Đăng ký</h2>
+
+        <!-- Hiển thị lỗi -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        <form method="post" asp-action="Register" id="registerForm">
+            <div class="mb-3">
+                <label class="form-label">Họ và tên</label>
+                <input type="text" class="form-control" asp-for="FullName" required>
+                <span class="text-danger" asp-validation-for="FullName"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Ngày sinh</label>
+                <input type="date" class="form-control" asp-for="DateOfBirth" required>
+                <span class="text-danger" asp-validation-for="DateOfBirth"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Giới tính</label>
+                <select class="form-control" asp-for="Gender" required>
+                    <option value="">Chọn giới tính</option>
+                    <option value="Male">Nam</option>
+                    <option value="Female">Nữ</option>
+                </select>
+                <span class="text-danger" asp-validation-for="Gender"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" asp-for="Email" required>
+                <span class="text-danger" asp-validation-for="Email"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mật khẩu</label>
+                <input type="password" class="form-control" asp-for="Password" required>
+                <span class="text-danger" asp-validation-for="Password"></span>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Xác nhận mật khẩu</label>
+                <input type="password" class="form-control" asp-for="ConfirmPassword" required>
+                <span class="text-danger" asp-validation-for="ConfirmPassword"></span>
+            </div>
+
+            <button type="submit" class="btn btn-custom w-100 text-white" id="registerButton">
+                <span class="spinner-border spinner-border-sm d-none" id="loadingIcon"></span> Đăng ký
+            </button>
+        </form>
+
+        <div class="text-center mt-3">
+            <span>Đã có tài khoản? <a href="login" class="text-decoration-none"style="color: #D19C97;">Đăng nhập ngay</a></span>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Lấy ngày hiện tại
+            let today = new Date();
+
+            // Trừ đi 18 năm
+            today.setFullYear(today.getFullYear() - 18);
+
+            // Định dạng yyyy-MM-dd để đặt vào input date
+            let maxDate = today.toISOString().split('T')[0];
+
+            // Đặt giá trị max cho input date
+            document.getElementById("dob").setAttribute("max", maxDate);
+        });
+    </script>
+</body>
+
+</html>
