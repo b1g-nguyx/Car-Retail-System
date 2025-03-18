@@ -17,7 +17,7 @@ public class CarRepository : ICarRepository
     private readonly IImageRepository _iimageRepository;
     private readonly ICategoryRepository _icategoryRepository;
     private readonly IBrandRepository _ibrandRepository;
-  
+
     public CarRepository(UnitOfWork unitOfWork, IImageRepository imageRepository, ICategoryRepository categoryRepository, IBrandRepository brandRepository)
     {
         _icategoryRepository = categoryRepository;
@@ -162,7 +162,6 @@ public class CarRepository : ICarRepository
         }
         return carViewModels;
     }
-
     public async Task<IPagedList<CarViewModel>> GetAllAsync(string searchString, int PageNumber, int PageSize, string Sort, decimal MinPrice, decimal MaxPrice, List<int> BrandIds, int categoryId, DateTime StartDate, DateTime EndDate)
     {
         Expression<Func<Car, bool>> filter = PredicateBuilder.New<Car>(true);
@@ -179,10 +178,9 @@ public class CarRepository : ICarRepository
             filter = filter.Or(c => c.Year >= year);
         }
 
-        if (MinPrice > 0 || MaxPrice > 0 && MaxPrice >= MinPrice)
+        if (MinPrice > 0 || (MaxPrice > 0 && MaxPrice >= MinPrice))
         {
-            filter = filter.And(c => c.PricePerDay >= (MinPrice > 0 ? MinPrice : 0)
-                              && c.PricePerDay <= (MaxPrice > 0 ? MaxPrice : decimal.MaxValue));
+            filter = filter.And(c => c.PricePerDay >= MinPrice && c.PricePerDay <= (MaxPrice > 0 ? MaxPrice : decimal.MaxValue));
         }
 
         if (BrandIds != null && BrandIds.Any())
@@ -195,19 +193,20 @@ public class CarRepository : ICarRepository
             filter = filter.And(c => c.CategoryId == categoryId);
         }
 
-        // Lấy danh sách các xe đã được thuê trong khoảng StartDate - EndDate
-        var rentedCarIds = _unitOfWork._carRetailRepository.GetQueryable(crd =>
-            crd.StartDate < EndDate && crd.EndDate > StartDate, allowTracking: true)
-            .Select(crd => crd.CarId);
+        
+        var rentedCarIds = _unitOfWork._carRetailRepository
+            .GetQueryable(crd => crd.StartDate <= EndDate && crd.EndDate >= StartDate, allowTracking: false)
+            .Select(crd => crd.CarId)
+            .Distinct(); // Loại bỏ trùng lặp
 
-        // Lọc các xe không nằm trong danh sách đã thuê
         filter = filter.And(c => !rentedCarIds.Contains(c.Id));
 
         var totalCount = await _unitOfWork._carRepository.GetQueryable()
                                 .Where(filter).CountAsync();
 
-        var query = _unitOfWork._carRepository.GetQueryable(filter, allowTracking: true);
+        var query = _unitOfWork._carRepository.GetQueryable(filter, allowTracking: false);
 
+        // Thêm sắp xếp linh hoạt
         query = Sort?.ToLower() switch
         {
             "asc" => query.OrderBy(c => c.CreatedAt),
@@ -219,6 +218,7 @@ public class CarRepository : ICarRepository
 
         List<CarViewModel> carViewModels = new List<CarViewModel>();
         var result = await query.ToListAsync();
+
         foreach (var item in result)
         {
             var car = await ViewModelConvertToModel(item);
@@ -226,6 +226,6 @@ public class CarRepository : ICarRepository
         }
 
         return new StaticPagedList<CarViewModel>(carViewModels, PageNumber, PageSize, totalCount);
-
     }
+
 }

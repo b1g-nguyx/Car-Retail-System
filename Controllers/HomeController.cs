@@ -68,7 +68,7 @@ public class HomeController : Controller
         {
             var DateData = JsonConvert.DeserializeObject<dynamic>(DateTimeJson);
             ViewData["StartDate"] = DateData!.StartDate.ToString("yyyy-MM-ddTHH:mm");
-            ViewData["EndDate"] = DateData!.EndDate.ToString("yyyy-MM-ddTHH:mm");;
+            ViewData["EndDate"] = DateData!.EndDate.ToString("yyyy-MM-ddTHH:mm"); ;
         }
         else
         {
@@ -132,6 +132,8 @@ public class HomeController : Controller
                 StartDate,
                 EndDate
             }));
+            SaveStartDate = StartDate;
+            SaveEndDate = EndDate;
         }
         else
         {

@@ -199,6 +199,7 @@ public class PaymentController : Controller
         // Get the message corresponding to VnPayResponseCode from the dictionary
         if (vnp_TransactionStatus.TryGetValue(response.VnPayResponseCode!, out var message))
         {
+
             TempData["Message"] = $"Payment error: {message}";
         }
         else
@@ -206,6 +207,8 @@ public class PaymentController : Controller
             TempData["Message"] = $"Unknown payment error: {response.VnPayResponseCode}";
         }
 
+        car.Car.Status = RentalStatus.Available;
+        await _carRepository.UpdateAsync(car);
         return RedirectToAction(nameof(PaymentFail));
     }
 
@@ -217,6 +220,7 @@ public class PaymentController : Controller
 
     public IActionResult PaymentFail()
     {
+        
         return View();
     }
 }
