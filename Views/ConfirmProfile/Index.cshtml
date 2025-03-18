@@ -1,0 +1,54 @@
+@model X.PagedList.IPagedList<Car_Rental_System.Models.Profile>
+@using X.PagedList.Mvc.Core
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Profile List";
+}
+
+<div class="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Profile List</h1>
+
+    <form method="get" asp-action="Index" class="mb-4 flex items-center gap-2">
+        <input 
+            type="text" 
+            name="searchString" 
+            value="@ViewData["searchString"]" 
+            placeholder="Search..." 
+            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" 
+        />
+        <button 
+            type="submit" 
+            class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600"
+        >Search</button>
+    </form>
+
+    <table class="w-full border-collapse border border-gray-200 shadow-md rounded-md overflow-hidden">
+        <thead>
+            <tr class="bg-gray-100 text-gray-700">
+                <th class="p-3 border border-gray-200">Họ tên</th>
+                <th class="p-3 border border-gray-200">Số điện thoại</th>
+                <th class="p-3 border border-gray-200">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var profile in Model)
+            {
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                    <td class="p-3 border border-gray-200">@profile.FullName</td>
+                    <td class="p-3 border border-gray-200">@profile.PhoneNumber</td>
+                    <td class="p-3 border border-gray-200 text-center">
+                        <a 
+                            asp-action="Detail" 
+                            asp-route-id="@profile.UserId" 
+                            class="text-blue-500 hover:text-blue-700 font-medium"
+                        >View</a> 
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="mt-4 flex justify-center">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchString = ViewData["searchString"] }), new PagedListRenderOptions { UlElementClasses = new string[] { "flex", "gap-2" }, LiElementClasses = new string[] { "px-3", "py-2", "border", "rounded-md", "hover:bg-gray-100" } })
+    </div>
+</div>

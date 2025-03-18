@@ -9,5 +9,6 @@ namespace Car_Rental_System.Models.Enums
         Completed,       // Đơn thuê đã hoàn tất
         Cancelled,      // Đơn thuê bị hủy
         PendingConfirmation //Chờ xác nhận từ người dùng
+        
     }
 }

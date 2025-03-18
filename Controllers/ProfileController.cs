@@ -14,6 +14,7 @@ using Car_Rental_System.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Car_Rental_System.ViewModels;
 using Car_Rental_System.Repositories;
+using Car_Rental_System.Models.Enums;
 
 [Authorize]
 public class ProfileController : Controller
@@ -158,6 +159,10 @@ public class ProfileController : Controller
 
             contract.PdfFileData = pdfBytes;
             await _contractRepository.UpdateAsync(contract);
+
+            var item = await _carRentalRepository.GetByIdContractAsync(contract.Id);
+            item.Status = RentalStatus.Rented;
+            await _carRentalRepository.UpdateAsync(item);
             return Ok(new { message = "Lưu chữ ký thành công!" });
         }
         catch (Exception ex)

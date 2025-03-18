@@ -9,4 +9,6 @@ public interface ICarRentalRepository
     Task<CarRental> GetByDateCreateAtTotalUserIdAsync(string userId, DateTime StartDate, DateTime EndDate, DateTime CreateAt, decimal TotalPrice);
     Task UpdateAsync(CarRental carRetail);
     Task AddAsync(CarRental carRetail);
+    Task<CarRental> GetByIdContractAsync(int id);
+
 }

@@ -80,4 +80,10 @@ public class CarRentalRepository : ICarRentalRepository
         var query = await _unitOfWork._carRetailRepository.FindAsync(filter, allowTracking: true);
         return query!;
     }
+
+    public async Task<CarRental> GetByIdContractAsync(int id)
+    {
+        var item = await _unitOfWork._carRetailRepository.FindAsync(c => c.ContractId == id);
+        return item!;
+    }
 }

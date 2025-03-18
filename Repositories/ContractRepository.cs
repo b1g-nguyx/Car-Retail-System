@@ -12,10 +12,8 @@ namespace Car_Rental_System.Repositories;
 public class ContractRepository : IContractRepository
 {
     private readonly UnitOfWork _unitOfWork;
-    private readonly IImageRepository _iimageRepository;
-    public ContractRepository(UnitOfWork unitOfWork, IImageRepository imageRepository)
+    public ContractRepository(UnitOfWork unitOfWork)
     {
-        _iimageRepository = imageRepository;
         _unitOfWork = unitOfWork;
     }
     public async Task AddAsync(Contract contract)
@@ -29,7 +27,6 @@ public class ContractRepository : IContractRepository
         var item = await _unitOfWork._contractRepository.GetByIdAsync(id);
         _unitOfWork._contractRepository.Remove(item);
         await _unitOfWork.SaveChangesAsync();
-        await _iimageRepository.DeleteAsync(item.Id, Constant.contract);
     }
 
     public async Task<Contract> GetByIdAsync(int id)

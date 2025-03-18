@@ -18,7 +18,7 @@ namespace Car_Rental_System.Controllers;
 public class PaymentController : Controller
 {
 
-
+    private readonly IEmailSender _emailSender;
     private readonly ICarRentalRepository _carRentalRepository;
     private readonly IProfileRepository _profileRepository;
     private readonly ICarRepository _carRepository;
@@ -26,8 +26,9 @@ public class PaymentController : Controller
     private readonly IImageRepository _iimageRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IVNPayService _vNPayService;
-    public PaymentController(IProfileRepository profileRepository, ICarRepository carRepository, ICarRentalRepository carRentalRepository, IImageRepository imageRepository, IContractRepository contractRepository, IVNPayService vNPayService, IHttpContextAccessor httpContextAccessor)
+    public PaymentController(IEmailSender emailSender, IProfileRepository profileRepository, ICarRepository carRepository, ICarRentalRepository carRentalRepository, IImageRepository imageRepository, IContractRepository contractRepository, IVNPayService vNPayService, IHttpContextAccessor httpContextAccessor)
     {
+        _emailSender = emailSender;
         _profileRepository = profileRepository;
         _carRepository = carRepository;
         _httpContextAccessor = httpContextAccessor;
@@ -51,10 +52,16 @@ public class PaymentController : Controller
     [HttpGet]
     public async Task<IActionResult> Checkout(int carId)
     {
+
         var item = await _carRepository.GetByIdAsync(carId);
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var email = User.FindFirst(ClaimTypes.Email)?.Value;
         var profile = await _profileRepository.GetByUserIdAsync(userId!);
+        if (!profile.IsConfirm)
+        {
+            ViewData["error"] = "Tài khoản chưa được xác thực vui lòng xác thực hoặc liên hệ hostLine:1234567890";
+            return RedirectToAction("Index", "Profile");
+        }
         if (string.IsNullOrEmpty(profile.Address) || string.IsNullOrEmpty(profile.DrivingLicense) || string.IsNullOrEmpty(profile.PhoneNumber))
         {
             return RedirectToAction("Index", "Profile");
@@ -165,14 +172,14 @@ public class PaymentController : Controller
                 CreatedAt = CreateAt
             };
 
-            
+
             await _contractRepository.AddAsync(contract);
 
 
 
             var CarRental = new CarRental
             {
-                CarId =carId,
+                CarId = carId,
                 UserId = userId!,
                 StartDate = StartDate,
                 EndDate = EndDate,
@@ -182,10 +189,10 @@ public class PaymentController : Controller
                 ContractId = contract.Id
             };
             await _carRentalRepository.AddAsync(CarRental);
-
             var cars = await _carRepository.GetByIdAsync(carId);
             cars.Car.Status = RentalStatus.Available;
             await _carRepository.UpdateAsync(cars);
+            await _emailSender.SendEmailAsync(contract.Email, "Xác nhận thanh toán thành công", "Hợp đồng của bạn sẽ sớm được nhân viên xác nhận");
             return RedirectToAction(nameof(PaymentSuccess));
         }
 

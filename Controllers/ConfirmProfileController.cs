@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Car_Rental_System.Models;
+using Car_Rental_System.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Car_Rental_System.Controllers;
@@ -12,9 +14,14 @@ public class ConfirmProfileController : Controller
         _profileRepository = profileRepository;
     }
     [HttpGet]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string searchString, int? page)
     {
-        return View();
+        string searchValue = searchString ?? "";
+        int pageNumber = page ?? 1;
+        int pageSize = 10;
+        var display = await _profileRepository.GetAllAsync(searchValue, pageNumber, pageSize);
+        ViewData["searchString"] = searchString;
+        return View(display);
     }
 
     [HttpGet]
@@ -29,5 +36,20 @@ public class ConfirmProfileController : Controller
         }
 
         return View(display);
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> ConfirmProfile(string UserId)
+    {
+        var model = await _profileRepository.GetByUserIdAsync(UserId);
+        if (!ModelState.IsValid)
+        {
+
+            return View(model);
+        }
+        model.IsConfirm = true;
+        await _profileRepository.UpdateAsync(model);
+        return RedirectToAction(nameof(Index));
     }
 }

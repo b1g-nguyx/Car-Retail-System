@@ -30,9 +30,8 @@ public class CarRental
     public RentalStatus Status { get; set; } = RentalStatus.PendingApproval; // Sử dụng Enum
 
     public int ContractId { get; set; }
-
+    public string? ImageReturnCarURL { get; set; }
     public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-
     // Navigation Properties
     public ApplicationUser User { get; set; }
     public Payment Payment { get; set; }

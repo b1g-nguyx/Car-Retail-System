@@ -27,7 +27,7 @@ namespace Car_Rental_System.Models
 
         [Url(ErrorMessage = "URL ảnh đại diện không hợp lệ.")]
         public string? AvatarUrl { get; set; }
-
+        public bool IsConfirm { get; set; } = false;
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; }
     }

@@ -42,6 +42,15 @@
                 <div class="card-header bg-primary text-white text-center">
                     <h3>User Profile</h3>
                 </div>
+                @if(Model.IsConfirm != true){
+                    <div>
+                        <p class="text-danger"> Tài khoản chưa được xác thực*</p>
+                    </div>
+                }else{
+                     <div>
+                        <p class="text-success"> Tài khoản đã được xác thực*</p>
+                    </div>
+                }
                 <div class="card-body">
                     <div class="text-center mb-4">
                         <img src="@(Model.AvatarUrl ?? "")" class="rounded-circle" alt="User Avatar" width="150"

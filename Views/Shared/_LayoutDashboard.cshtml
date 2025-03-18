@@ -17,26 +17,28 @@
             @if (User.IsInRole("Admin"))
             {
                 <a href="@Url.Action("Index", "UserManagement")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
-                        class="fas fa-home"></i> Account</a>
+                        class="fas fa-home"></i>Tài khoản</a>
             }
             @if (User.IsInRole("Manager"))
             {
                 <a href="@Url.Action("Index", "Car")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
-                        class="fas fa-chart-bar"></i>Car</a>
+                        class="fas fa-chart-bar"></i>Xe</a>
                 <a href="@Url.Action("Index", "Category")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
-                        class="fas fa-cog"></i>Category</a>
+                        class="fas fa-cog"></i>Loại xe</a>
                 <a href="@Url.Action("Index", "Brand")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
-                        class="fas fa-cog"></i>Brand</a>
+                        class="fas fa-cog"></i>Hãng xe</a>
             }
             @if (User.IsInRole("Staff") || User.IsInRole("Manager"))
             {
                 <a href="@Url.Action("Index", "Contract")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
-                        class="fas fa-cog"></i>Contract</a>
+                        class="fas fa-cog"></i>Hợp đồng thuê xe</a>
                 <a href="@Url.Action("Index", "CarRental")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
-                        class="fas fa-cog"></i>Car Rental</a>
+                        class="fas fa-cog"></i>Xe thuê</a>
+                <a href="@Url.Action("Index", "ConfirmProfile")" class="block py-2 px-4 rounded hover:bg-gray-700"><i
+                        class="fas fa-cog"></i>Xác minh thông tin người dùng</a>
             }
             <form asp-action="Logout" asp-controller="Account" method="post">
-                <button type="submit">Logout</button>
+                <button type="submit">Đăng xuất</button>
             </form>
 
         </nav>
