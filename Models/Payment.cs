@@ -1,30 +1,21 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Car_Rental_System.Models.Enums;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Car_Rental_System.Models;
-
 public class Payment
 {
     [Key]
     public int Id { get; set; }
-
-
+    [Required]
+    [ForeignKey(nameof(CarRental))]
     public int RentalId { get; set; }
-
-    [Column(TypeName = "decimal(18,2)")]
+     [DisplayFormat(DataFormatString = "{0:#,##0} VNĐ", ApplyFormatInEditMode = false)]
     public decimal Amount { get; set; }
-
-
-    public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
-
-
-    [StringLength(50)]
-    public string PaymentMethod { get; set; } = string.Empty;
-
-    [StringLength(50)]
-    public string Status { get; set; } = "Chờ xử lý"; // Mặc định là chờ xử lý
-
-    // Khóa ngoại
-    [ForeignKey("RentalId")]
-    public virtual CarRental? CarRental { get; set; }
+    public DateTime PaymentDate { get; set; }
+    public string? PaymentMethod { get; set; }
+    public RentalStatus Status { get; set; } = RentalStatus.PendingApproval;
+    public CarRental CarRental { get; set; }
 }
+

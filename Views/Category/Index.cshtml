@@ -1,41 +1,111 @@
-@model IEnumerable<Car_Rental_System.Models.Category>
+@model X.PagedList.IPagedList<Car_Rental_System.ViewModels.CategoryViewModel>
+@using X.PagedList.Mvc.Core
 
 @{
-    ViewData["Title"] = "Index";
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = "Categories";
 }
 
-<h1>Index</h1>
+<div class="container mx-auto mt-4 p-4">
+    <div class="bg-white shadow-lg rounded-lg p-4">
+        <div class="flex justify-between items-center border-b pb-3 mb-4">
+            <h2 class="text-xl font-semibold text-gray-700">Danh sách danh mục</h2>
+            <a asp-action="Create" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                <i class="fas fa-plus"></i> Thêm danh mục
+            </a>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full border border-gray-300 text-left text-gray-700">
+                <thead class="bg-gray-100 text-gray-900">
+                    <tr>
+                        <th class="p-2 border">#</th>
+                        <th class="p-2 border">Tên danh mục</th>
+                        <th class="p-2 border">Ảnh</th>
+                        <th class="p-2 border">Trạng thái</th>
+                        <th class="p-2  border w-[120px] text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Any())
+                    {
+                        int index = 1 + (Model.PageNumber - 1) * Model.PageSize;
+                        @foreach (var item in Model)
+                        {
+                            <tr class="border-t">
+                                <td class="p-2 border">@(index++)</td>
+                                <td class="p-2 border">@item.Category.Name</td>
+                                <td class="p-2 border">
+                                    @if (item.Images.Any())
+                                    {
+                                        var imageUrl = item.Images.First().ImageUrl;
+                                        <img src="@imageUrl" class="w-20 h-20 object-cover rounded-md cursor-pointer" data-img="@imageUrl" onclick="openModal(this)" />
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-500">Không có ảnh</span>
+                                    }
+                                </td>
+                                <td class="p-2 border">
+                                    <span class="px-2 py-1 rounded-lg text-white @(item.Category.IsActive ? "bg-green-500" : "bg-red-500")">
+                                        @(item.Category.IsActive ? "Hoạt động" : "Không hoạt động")
+                                    </span>
+                                </td>
+                                <td class="p-2 border flex space-x-2">
+                                    <a asp-action="Details" asp-route-id="@item.Category.Id" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">Xem</a>
+                                    <a asp-action="Edit" asp-route-id="@item.Category.Id" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"> Sửa</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Category.Id" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded" onclick="return confirm('Bạn có chắc chắn muốn xóa?');">Xóa</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-gray-500 p-4">Không có danh mục nào.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+        <!-- Phân trang -->
+        <div class="flex justify-center space-x-2 mt-4">
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+            {
+                DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                UlElementClasses = new[] { "flex space-x-2" },
+                LiElementClasses = new[] { "px-3 py-1 border rounded-lg bg-gray-200 hover:bg-gray-300" },
+                PageClasses = new[] { "text-gray-700" }
+            })
+        </div>
+    </div>
+</div>
+
+<!-- Modal hiển thị ảnh -->
+<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg p-4 w-96">
+        <div class="flex justify-between items-center border-b pb-2">
+            <h5 class="text-lg font-semibold">Xem ảnh</h5>
+            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
+        </div>
+        <div class="p-4 text-center">
+            <img id="modalImage" class="w-full rounded-lg" src="" alt="Image Preview">
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openModal(img) {
+            document.getElementById("modalImage").src = img.getAttribute("data-img");
+            document.getElementById("imageModal").classList.remove("hidden");
+        }
+        function closeModal() {
+            document.getElementById("imageModal").classList.add("hidden");
+        }
+    </script>
 }
-    </tbody>
-</table>

@@ -1,0 +1,18 @@
+@* Views/Shared/_PartialScripts.cshtml *@
+
+<!-- Toastr Notification -->
+<link href="~/assets/css/toastr.css" rel="stylesheet" />
+<script src="~/assets/js/toastr.js"></script>
+
+<!-- Pace.js - Hiệu ứng loading -->
+<link href="~/assets/css/pace.css" rel="stylesheet" />
+<script src="~/assets/js/pace.js"></script>
+
+<!-- File JavaScript dùng chung -->
+<script src="~/assets/js/site.js"></script>
+
+<!-- Thêm div để hiển thị thông báo -->
+<div id="notification-message" 
+     data-message="@TempData["Message"]" 
+     data-type="@TempData["Type"]">
+</div>

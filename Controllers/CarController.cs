@@ -8,9 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Car_Rental_System.Data;
 using Car_Rental_System.Models;
 using Car_Rental_System.Repositories;
+using Car_Rental_System.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Car_Rental_System.ViewModels;
+using System.Security.Claims;
 
 namespace Car_Rental_System.Controllers
 {
+    [Authorize(Roles = "Manager")]
     public class CarController : Controller
     {
         private readonly ICarRepository _icarRepository;
@@ -55,16 +60,24 @@ namespace Car_Rental_System.Controllers
         }
 
         // GET: Car/Create
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var carViewModel = new CarViewModel
+            var categories = await _icategoryRepository.GetAllForListAsync(true) ?? new List<Category>();
+            var brands = await _ibrandRepository.GetAllForListAsync(true) ?? new List<Brand>();
+
+            var viewModel = new CarViewModel
             {
-                Categories = await _icategoryRepository.GetAllAsync(),
-                Brands = await _ibrandRepository.GetAllAsync()
+                Car = new Car(),
+                Categories = categories,
+                Brands = brands
             };
 
-            return View(carViewModel);
+            return View(viewModel);
         }
+
+
+
 
         // POST: Car/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -73,16 +86,17 @@ namespace Car_Rental_System.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CarViewModel carViewModel)
         {
-            carViewModel.Brand = await _ibrandRepository.GetByIdAsync(carViewModel.BrandId);
-            carViewModel.Category = await _icategoryRepository.GetByIdAsync(carViewModel.CategoryId);
-
-            ModelState.Remove("Brand");
-            ModelState.Remove("Category");
-
+            var Brand = await _ibrandRepository.GetByIdAsync(carViewModel.Car.BrandId);
+            carViewModel.Car.Brand = Brand.Brand;
+            var Category = await _icategoryRepository.GetByIdAsync(carViewModel.Car.CategoryId);
+            carViewModel.Car.Category = Category.Category;
             if (ModelState.IsValid)
             {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                carViewModel.Car.CreatedAt = DateTime.Now;
+                carViewModel.Car.CreatedBy = userId;
                 await _icarRepository.AddAsync(carViewModel);
-               return Json(new { success = true });
+                return Json(new { success = true });
             }
             return View(carViewModel);
         }
@@ -100,8 +114,8 @@ namespace Car_Rental_System.Controllers
             {
                 return NotFound();
             }
-            car.Categories = await _icategoryRepository.GetAllAsync();
-            car.Brands = await _ibrandRepository.GetAllAsync();
+            car.Categories = await _icategoryRepository.GetAllForListAsync(true);
+            car.Brands = await _ibrandRepository.GetAllForListAsync(true);
             return View(car);
         }
 
@@ -112,10 +126,13 @@ namespace Car_Rental_System.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CarViewModel carViewModel)
         {
+            var Brand = await _ibrandRepository.GetByIdAsync(carViewModel.Car.BrandId);
+            var Category = await _icategoryRepository.GetByIdAsync(carViewModel.Car.CategoryId);
             ModelState.Remove("Brand");
             ModelState.Remove("Category");
-            carViewModel.Brand = await _ibrandRepository.GetByIdAsync(carViewModel.BrandId);
-            carViewModel.Category = await _icategoryRepository.GetByIdAsync(carViewModel.CategoryId);
+            ModelState.Remove("Images");
+            carViewModel.Car.Brand = Brand.Brand;
+            carViewModel.Car.Category = Category.Category;
             if (ModelState.IsValid)
             {
                 try
@@ -126,12 +143,12 @@ namespace Car_Rental_System.Controllers
                 {
                     return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true });
             }
 
-            carViewModel.Images = await _iimageRepository.GetAllByIdRelationId(carViewModel.Id, Constants.Constants.car);
-            carViewModel.Categories = await _icategoryRepository.GetAllAsync();
-            carViewModel.Brands = await _ibrandRepository.GetAllAsync();
+            carViewModel.Images = await _iimageRepository.GetAllByIdRelationId(carViewModel.Car.Id, Constant.car);
+            carViewModel.Categories = await _icategoryRepository.GetAllForListAsync(true);
+            carViewModel.Brands = await _ibrandRepository.GetAllForListAsync(true);
             return View(carViewModel);
         }
 

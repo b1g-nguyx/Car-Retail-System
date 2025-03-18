@@ -1,0 +1,340 @@
+@model Car_Rental_System.ViewModels.FilterCarViewModel
+@using X.PagedList.Mvc.Core
+@{
+    ViewData["Title"] = "Shop";
+    Layout = "_LayoutHome";
+}
+
+@section Topbar {
+    @await Component.InvokeAsync("Topbar")
+}
+
+@section Navbar {
+    @await Component.InvokeAsync("Navbar")
+}
+@section Footer {
+    @await Component.InvokeAsync("Footer")
+}
+
+<style>
+    .range-slider {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .range-slider .wrapper {
+        position: relative;
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px 25px;
+    }
+
+    .price-input {
+        display: flex;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .price-input .field {
+        display: flex;
+        width: 100%;
+        height: 35px;
+        align-items: center;
+    }
+
+    .field input {
+        width: 100%;
+        height: 100%;
+        outline: none;
+        border: 1px solid #999;
+        border-radius: 5px;
+        text-align: center;
+        margin-left: 5px;
+        font-size: 14px;
+    }
+
+    .field span {
+        margin-right: 5px;
+    }
+
+    .separator {
+        width: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .slider {
+        height: 5px;
+        position: relative;
+        background: #ddd;
+        border-radius: 5px;
+    }
+
+    .slider .progress {
+        height: 100%;
+        position: absolute;
+        border-radius: 5px;
+        background: #d19c97;
+    }
+
+    .range-input {
+        position: relative;
+    }
+
+    .range-input input {
+        position: absolute;
+        width: 100%;
+        height: 5px;
+        top: -5px;
+        background: none;
+        pointer-events: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        height: 17px;
+        width: 17px;
+        border-radius: 50%;
+        background: #d19c97;
+        pointer-events: auto;
+        -webkit-appearance: none;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        height: 17px;
+        width: 17px;
+        border: none;
+        border-radius: 50%;
+        background: #4070f4;
+        pointer-events: auto;
+        -moz-appearance: none;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+    }
+</style>
+<!-- Page Header Start -->
+<div class="container-fluid bg-secondary mb-5">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">Sản phẩm</h1>
+        <div class="d-inline-flex">
+            <p class="m-0"><a href="/">Trang chủ</a></p>
+            <p class="m-0 px-2">-</p>
+            <p class="m-0">Sản phẩm</p>
+        </div>
+    </div>
+</div>
+<!-- Page Header End -->
+
+
+<!-- Shop Start -->
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+        <!-- Shop Sidebar Start -->
+        <div class="col-lg-3 col-md-12">
+            <!-- Price Start -->
+            <form action="@Url.Action("Shop")" method="get">
+                <!-- Hidden fields để giữ lại thông tin lọc -->
+                <input type="hidden" name="CategoryId" value="@ViewData["CategoryId"]" />
+                <input type="hidden" name="PageSize" value="@Model.PageSize" />
+                <input type="hidden" name="PageNumber" value="@Model.PageNumber" />
+
+                <div class="d-flex align-items-center justify-content-end mb-4">
+                    <div class="ml-4">
+                        <button class="btn border btn-outline-primary" type="submit">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                    </div>
+                    <div class="ml-4">
+                        <select class="form-control border btn-outline-primary" asp-for="@Model.Sort" id="sortSelect">
+                            <option value="">Sort by</option>
+                            <option value="asc" selected="@(Model.Sort == "asc" ? "selected" : null)">Giá tăng dần
+                                &#8593;</option>
+                            <option value="desc" selected="@(Model.Sort == "desc" ? "selected" : null)">Giá giảm dần
+                                &#8595;</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Bộ lọc giá -->
+                <div class="border-bottom mb-4 pb-4">
+                    <h5 class="font-weight-semi-bold mb-4">Lọc theo giá</h5>
+                    <div class="range-slider">
+                        <div class="wrapper">
+                            <div class="price-input">
+                                <div class="field">
+                                    <input type="text" id="minPrice" readonly class="input-min border-0"
+                                        asp-for="@Model.MinPrice" value="@Model.MinPrice">
+                                    <span>VND</span>
+                                </div>
+                                <div class="separator">-</div>
+                                <div class="field">
+                                    <input type="text" readonly id="maxPrice" class="input-max border-0"
+                                        asp-for="@Model.MaxPrice" value="@Model.MaxPrice">
+                                    <span>VND</span>
+                                </div>
+                            </div>
+                            <div class="slider">
+                                <div class="progress"></div>
+                            </div>
+                            <div class="range-input">
+                                <input type="range" class="range-min" min="0" max="10000000"
+                                    value="@Model.MinPrice" step="1000">
+                                <input type="range" class="range-max" min="0" max="10000000"
+                                    value="@Model.MaxPrice" step="1000">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- Bộ lọc thương hiệu -->
+                <div class="border-bottom mb-4 pb-4">
+                    <h5 class="font-weight-semi-bold mb-4">Lọc Hãng</h5>
+
+                    <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                        <input type="checkbox" class="custom-control-input" id="all" onclick="toggleAll(this)">
+                        <label class="custom-control-label" for="all">Tất cả</label>
+                    </div>
+
+                    @foreach (var item in Model.Brands)
+                    {
+                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" name="BrandIds" class="custom-control-input brand-checkbox"
+                                id="brand_@(item.Id)" value="@item.Id" @(Model.BrandIds.Contains(item.Id) ? "checked" : "")
+                                onclick="updateAllCheckbox()">
+                            <label class="custom-control-label" for="brand_@(item.Id)">@item.Name</label>
+                        </div>
+                    }
+                </div>
+            </form>
+
+        </div>
+        <div class="col-lg-9 col-md-12">
+            <div class="row pb-3">
+                <div class="col-12 pb-1">
+
+                </div>
+                @foreach (var item in Model.CarViewModels)
+                {
+                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                        <div class="card product-item border-0 mb-4">
+                            <div
+                                class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                                 @if (item.Images != null && item.Images.Any())
+                            {
+                            <img class="img-fluid w-100" src="@(item.Images.FirstOrDefault().ImageUrl)" alt="">
+                            }
+                            else
+                            {
+                                <img class="img-fluid w-100" src="/images/default.jpg" alt="No image available">
+                            }
+                            </div>
+                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                                <h6 class="text-truncate mb-3">@item.Car.Model</h6>
+                                <div class="d-flex justify-content-center">
+                                    <h6>@item.Car.PricePerDay VND</h6>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between bg-light border">
+                                <a href="/Home/Details/@item.Car.Id" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="align-items-center justify-content-center d-flex">
+                @Html.PagedListPager(Model.CarViewModels, page => Url.Action("Shop", new
+                {
+                    page,
+                                searchString = Model.SearchString,
+                                sort = Model.Sort,
+                                minPrice = Model.MinPrice,
+                                maxPrice = Model.MaxPrice,
+                                brandIds = Model.BrandIds
+                                }),
+                                new PagedListRenderOptions
+                                {
+                                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                                    DisplayLinkToNextPage = PagedListDisplayMode.Always,
+                                    UlElementClasses = new[] { "pagination" },
+                                    LiElementClasses = new[] { "page-item" },
+                                    PageClasses = new[] { "page-link" }
+                                })
+            </div>
+        </div>
+        <!-- Shop Product End -->
+
+    </div>
+</div>
+<!-- Shop End -->
+
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const rangeInput = document.querySelectorAll(".range-input input");
+        const priceInput = document.querySelectorAll(".price-input input");
+        const range = document.querySelector(".slider .progress");
+        let priceGap = 10;
+
+        priceInput.forEach(input => {
+            input.addEventListener("input", e => {
+                let minPrice = parseInt(priceInput[0].value);
+                let maxPrice = parseInt(priceInput[1].value);
+
+                if ((maxPrice - minPrice >= priceGap) && maxPrice <= rangeInput[1].max) {
+                    if (e.target.className === "input-min") {
+                        rangeInput[0].value = minPrice;
+                        range.style.left = ((minPrice / rangeInput[0].max) * 100) + "%";
+                    } else {
+                        rangeInput[1].value = maxPrice;
+                        range.style.right = 100 - (maxPrice / rangeInput[1].max) * 100 + "%";
+                    }
+                }
+            });
+        });
+
+        rangeInput.forEach(input => {
+            input.addEventListener("input", e => {
+                let minVal = parseInt(rangeInput[0].value);
+                let maxVal = parseInt(rangeInput[1].value);
+
+                if ((maxVal - minVal) < priceGap) {
+                    if (e.target.className === "range-min") {
+                        rangeInput[0].value = maxVal - priceGap;
+                    } else {
+                        rangeInput[1].value = minVal + priceGap;
+                    }
+                } else {
+                    priceInput[0].value = minVal;
+                    priceInput[1].value = maxVal;
+                    range.style.left = ((minVal / rangeInput[0].max) * 100) + "%";
+                    range.style.right = 100 - (maxVal / rangeInput[1].max) * 100 + "%";
+                }
+            });
+        });
+    });
+
+</script>
+
+
+<script>
+    function toggleAll(source) {
+        let checkboxes = document.querySelectorAll('.brand-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = source.checked;
+        });
+    }
+
+    function updateAllCheckbox() {
+        let allCheckbox = document.getElementById('all');
+        let checkboxes = document.querySelectorAll('.brand-checkbox');
+        let allChecked = [...checkboxes].every(checkbox => checkbox.checked);
+        let anyChecked = [...checkboxes].some(checkbox => checkbox.checked);
+
+        allCheckbox.checked = allChecked;
+        allCheckbox.indeterminate = !allChecked && anyChecked;
+    }
+</script>
+

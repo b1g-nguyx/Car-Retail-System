@@ -8,23 +8,29 @@ using Microsoft.EntityFrameworkCore;
 using Car_Rental_System.Data;
 using Car_Rental_System.Models;
 using Car_Rental_System.Repositories;
+using Car_Rental_System.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Car_Rental_System.Controllers
-{
+{ [Authorize(Roles = "Manager")]
     public class CategoryController : Controller
     {
         private readonly ICategoryRepository _icategoryRepository;
+        private readonly IImageRepository _iimageRepository;
 
-        public CategoryController(ICategoryRepository categoryRepository)
+        public CategoryController(ICategoryRepository categoryRepository, IImageRepository imageRepository)
         {
+            _iimageRepository = imageRepository;
             _icategoryRepository = categoryRepository;
         }
 
         // GET: Category
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
-            var (items, totalCategory) = await _icategoryRepository.GetAllAsync("", -1, 10, -1);
-            return View(items);
+            int pageNumber = page ?? 1;
+            int pageSize = 10;
+            var item = await _icategoryRepository.GetAllAsync("", pageSize, pageNumber);
+            return View(item);
         }
 
         // GET: Category/Details/5
@@ -55,14 +61,15 @@ namespace Car_Rental_System.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Status")] Category category)
+        public async Task<IActionResult> Create(CategoryViewModel categoryViewModel)
         {
+            ModelState.Remove("Images");
             if (ModelState.IsValid)
             {
-                await _icategoryRepository.AddAsync(category);
-                return RedirectToAction(nameof(Index));
+                await _icategoryRepository.AddAsync(categoryViewModel);
+                return Json(new { success = true });
             }
-            return View(category);
+            return View(categoryViewModel);
         }
 
         // GET: Category/Edit/5
@@ -73,12 +80,12 @@ namespace Car_Rental_System.Controllers
                 return NotFound();
             }
 
-            var category = await _icategoryRepository.GetByIdAsync(id);
-            if (category == null)
+            var categoryViewModel = await _icategoryRepository.GetByIdAsync(id);
+            if (categoryViewModel == null)
             {
                 return NotFound();
             }
-            return View(category);
+            return View(categoryViewModel);
         }
 
         // POST: Category/Edit/5
@@ -86,22 +93,23 @@ namespace Car_Rental_System.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Category category)
+        public async Task<IActionResult> Edit(CategoryViewModel categoryViewModel)
         {
 
+                ModelState.Remove("Images");
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _icategoryRepository.UpdateAsync(category);
+                    await _icategoryRepository.UpdateAsync(categoryViewModel);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
+                  return Json(new { success = true });
             }
-            return View(category);
+            return View(categoryViewModel);
         }
 
         // GET: Category/Delete/5
@@ -112,13 +120,13 @@ namespace Car_Rental_System.Controllers
                 return NotFound();
             }
 
-            var category = await _icategoryRepository.GetByIdAsync(id);
-            if (category == null)
+            var categoryViewModel = await _icategoryRepository.GetByIdAsync(id);
+            if (categoryViewModel == null)
             {
                 return NotFound();
             }
 
-            return View(category);
+            return View(categoryViewModel);
         }
 
         // POST: Category/Delete/5
@@ -126,8 +134,8 @@ namespace Car_Rental_System.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _icategoryRepository.GetByIdAsync(id);
-            if (category != null)
+            var categoryViewModel = await _icategoryRepository.GetByIdAsync(id);
+            if (categoryViewModel != null)
             {
                 await _icategoryRepository.DeleteAsync(id);
             }

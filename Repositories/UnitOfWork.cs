@@ -11,10 +11,13 @@ namespace Car_Rental_System.Repositories
     {
         private readonly ApplicationDbContext _dbContext;
         private IDbContextTransaction? _transaction;
-        public virtual IRepository<Car> _carRepository { get; set;}
-        public virtual IRepository<Images> _imageRepository { get; set;}
-        public virtual IRepository<Category> _categoryRepository { get; set;}
-        public virtual IRepository<Brand> _brandRepository { get; set;}
+        public virtual IRepository<Car> _carRepository { get; set; }
+        public virtual IRepository<Images> _imageRepository { get; set; }
+        public virtual IRepository<Category> _categoryRepository { get; set; }
+        public virtual IRepository<Brand> _brandRepository { get; set; }
+        public virtual IRepository<Contract> _contractRepository { get; set; }
+        public virtual IRepository<CarRental> _carRetailRepository { get; set; }
+        public virtual IRepository<Profile> _profileRepository { get; set; }
 
 
         private bool _disposed = false;
@@ -26,6 +29,9 @@ namespace Car_Rental_System.Repositories
             _imageRepository = new Repository<Images>(_dbContext);
             _categoryRepository = new Repository<Category>(_dbContext);
             _brandRepository = new Repository<Brand>(_dbContext);
+            _contractRepository = new Repository<Contract>(_dbContext);
+            _carRetailRepository = new Repository<CarRental>(_dbContext);
+            _profileRepository = new Repository<Profile>(_dbContext);
         }
 
         /// <summary>

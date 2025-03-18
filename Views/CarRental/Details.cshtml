@@ -1,0 +1,54 @@
+@model Car_Rental_System.Models.CarRental
+@{
+    Layout = "_LayoutDashboard";
+    ViewData["Title"] = " Detail Car Rentals";
+}
+<h1 class="text-2xl font-bold mb-4">Car Rental Details</h1>
+
+<div class="bg-white shadow-lg rounded-lg p-6">
+    <h4 class="text-xl font-semibold mb-2">CarRental</h4>
+    <hr class="border-gray-300 mb-4" />
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <dl class="grid grid-cols-2 gap-2">
+                <dt class="font-semibold">Id</dt>
+                <dd>@Model.Id</dd>
+
+                <dt class="font-semibold">User Id</dt>
+                <dd>@Model.UserId</dd>
+
+                <dt class="font-semibold">Start Date</dt>
+                <dd>@Model.StartDate.ToString("MM/dd/yyyy")</dd>
+
+                <dt class="font-semibold">End Date</dt>
+                <dd>@Model.EndDate.ToString("MM/dd/yyyy")</dd>
+
+                <dt class="font-semibold">Total Price</dt>
+                <dd>@Model.TotalPrice</dd>
+
+                <dt class="font-semibold">Status</dt>
+                <dd>
+                    <span class="px-3 py-1 rounded-md text-white font-medium 
+                  @((int)Model.Status == 3 ? "bg-yellow-500" :
+                                        (int)Model.Status == 6 ? "bg-blue-500" :
+                                        (int)Model.Status == 4 ? "bg-green-500" :
+                                        (int)Model.Status == 5 ? "bg-red-500" :
+                                        "bg-gray-500")">
+                        @Model.Status.ToString()
+                    </span>
+                </dd>
+                <dt class="font-semibold">Created At</dt>
+                <dd>@Model.CreatedAt?.ToString("MM/dd/yyyy")</dd>
+            </dl>
+        </div>
+    </div>
+    <div class="mt-4">
+        <a asp-action="Details" asp-controller="Contract" asp-route-Id=@Model.ContractId
+            class="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-700 transition">Tạo hợp đồng</a>
+    </div>
+</div>
+
+<div class="mt-4 space-x-4">
+    <a asp-action="Index" class="bg-gray-500 text-white px-4 py-2 rounded-md shadow hover:bg-gray-700 transition">Back
+        to List</a>
+</div>

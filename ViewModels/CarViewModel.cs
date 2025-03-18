@@ -1,31 +1,18 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Car_Rental_System.Models;
 
+using Car_Rental_System.Models;
+using Car_Rental_System.Models.Enums;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
+namespace Car_Rental_System.ViewModels;
 public class CarViewModel
 {
-    [Key]
-    public int Id { get; set; }
-    public int BrandId { get; set; }
-    public int CategoryId { get; set; }
-
-    public Brand Brand { get; set; } = null!;
-    public Category Category { get; set; } = null!;
-    public string Model { get; set; } = string.Empty;
-    public int Year { get; set; }
-
-    [Column(TypeName = "decimal(18,2)")]
-    public decimal PricePerDay { get; set; }
-    public bool Availability { get; set; }
-    public string Description { get; set; } = string.Empty;
-    public string LicensePlates { get; set; } = string.Empty;
-    public int Kilometers { get; set; }
-    public string FuelType { get; set; } = string.Empty;
-    public string Transmission { get; set; } = string.Empty;
-    public int Seats { get; set; }
+    public Car Car { get; set; } = new Car();
     public List<IFormFile> files { get; set; } = new List<IFormFile>();
-    public IEnumerable<Images>? Images { get; set; }
-    public IEnumerable<Category>? Categories { get; set; }
-    public IEnumerable<Brand>? Brands { get; set; }
+    public IEnumerable<Images> Images { get; set; } = new List<Images>();
+    public IEnumerable<Category> Categories { get; set; } = new List<Category>();
+    public IEnumerable<Brand> Brands { get; set; } = new List<Brand>();
 
+    // Chuyển RentalStatus enum thành SelectListItem
+    public IEnumerable<SelectListItem> RentalStatuses => Enum.GetValues<RentalStatus>()
+        .Select(rs => new SelectListItem {  Value = ((int)rs).ToString(), Text = rs.ToString() });
 }

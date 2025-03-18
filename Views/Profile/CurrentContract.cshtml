@@ -1,0 +1,93 @@
+@model IEnumerable<Car_Rental_System.Models.Contract>
+
+@{
+    Layout = "_LayoutHome";
+    ViewData["Title"] = "Current Contracts";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="list-group shadow-lg">
+                <a asp-action="Index" asp-controller="Profile" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user"></i> Profile Overview
+                </a>
+                @* <a asp-action="Edit" asp-controller="Profile" class="list-group-item list-group-item-action">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+                <a asp-action="ChangePassword" asp-controller="Profile" class="list-group-item list-group-item-action">
+                    <i class="fas fa-key"></i> Change Password
+                </a> *@
+               <a asp-action="ContractHistory" class="list-group-item list-group-item-action">
+                    <i class="fas fa-car"></i> Lịch sử hợp đồng
+                </a>
+                <a asp-action="CurrentContract" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-car"></i> Hợp đồng hiện tại
+                </a>
+                <form method="Post" asp-action="Logout" asp-controller="Account">
+                    <button type="submit" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h3>Current Contracts</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Contract ID</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Rental Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.StartDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.EndDate.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.TotalPrice VNĐ</td>
+                                    <td>
+                                        @if (item.Status == "Pending")
+                                        {
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        }
+                                        else if (item.Status == "Signed")
+                                        {
+                                            <span class="badge bg-success">Signed</span>
+                                        }
+                                        else if (item.Status == "Cancelled")
+                                        {
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@item.Status</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="ViewDetailContract" asp-route-Id="@item.Id" asp-controller="Profile" class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

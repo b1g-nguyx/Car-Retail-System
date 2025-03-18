@@ -8,23 +8,28 @@ using Microsoft.EntityFrameworkCore;
 using Car_Rental_System.Data;
 using Car_Rental_System.Models;
 using Car_Rental_System.Repositories;
+using Car_Rental_System.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Car_Rental_System.Controllers
 {
+    [Authorize(Roles = "Manager")]
     public class BrandController : Controller
     {
         private readonly IBrandRepository _ibrandRepository;
-
-        public BrandController(IBrandRepository brandRepository)
+        private readonly IImageRepository _iimageRepository;
+        public BrandController(IBrandRepository brandRepository, IImageRepository imageRepository)
         {
+            _iimageRepository = imageRepository;
             _ibrandRepository = brandRepository;
         }
 
         // GET: Brand
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
-            var (items, totalBrand) = await _ibrandRepository.GetAllAsync("", -1, 10, -1);
-
+            int pageNumber = page ?? 1;
+            int pageSize = 10;
+            var items = await _ibrandRepository.GetAllAsync("", pageSize, pageNumber);
             return View(items);
         }
 
@@ -45,28 +50,27 @@ namespace Car_Rental_System.Controllers
             return View(item);
         }
 
-        // GET: Brand/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Brand/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Status")] Brand brand)
+        public async Task<IActionResult> Create(BrandViewModel brandViewModel)
         {
+
+            ModelState.Remove("Images");
+
+
             if (ModelState.IsValid)
             {
-                await _ibrandRepository.AddAsync(brand);
-                return RedirectToAction(nameof(Index));
+                await _ibrandRepository.AddAsync(brandViewModel);
+                return Json(new { success = true });
             }
-            return View(brand);
+            return View(brandViewModel);
         }
 
-        // GET: Brand/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
@@ -74,37 +78,35 @@ namespace Car_Rental_System.Controllers
                 return NotFound();
             }
 
-            var brand = await _ibrandRepository.GetByIdAsync(id);
-            if (brand == null)
+            var brandViewModel = await _ibrandRepository.GetByIdAsync(id);
+            if (brandViewModel == null)
             {
                 return NotFound();
             }
-            return View(brand);
+            return View(brandViewModel);
         }
 
-        // POST: Brand/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Brand brand)
+        public async Task<IActionResult> Edit(BrandViewModel brandViewModel)
         {
+            ModelState.Remove("Images");
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _ibrandRepository.UpdateAsync(brand);
+                    await _ibrandRepository.UpdateAsync(brandViewModel);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
+              return Json(new { success = true });
             }
-            return View(brand);
+            return View(brandViewModel);
         }
 
-        // GET: Brand/Delete/5
+
         public async Task<IActionResult> Delete(int id)
         {
             if (id == null)
@@ -112,26 +114,34 @@ namespace Car_Rental_System.Controllers
                 return NotFound();
             }
 
-            var brand = await _ibrandRepository.GetByIdAsync(id);
-            if (brand == null)
+            var brandViewModel = await _ibrandRepository.GetByIdAsync(id);
+            if (brandViewModel == null)
             {
                 return NotFound();
             }
 
-            return View(brand);
+            return View(brandViewModel);
         }
 
-        // POST: Brand/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var brand = await _ibrandRepository.GetByIdAsync(id);
-            if (brand != null)
+            var brandViewModel = await _ibrandRepository.GetByIdAsync(id);
+            if (brandViewModel != null)
             {
                 await _ibrandRepository.DeleteAsync(id);
             }
             return RedirectToAction(nameof(Index));
         }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+
+            await _iimageRepository.DeleteAsync(id);
+            return Ok(new { message = "Ảnh đã được xóa thành công!" });
+        }
+
     }
 }

@@ -1,0 +1,166 @@
+@model Car_Rental_System.ViewModels.PaymentViewModel
+
+@{
+    ViewData["Title"] = "Shop";
+    Layout = "_LayoutHome";
+}
+
+@section Topbar {
+    @await Component.InvokeAsync("Topbar")
+}
+
+@section Navbar {
+    @await Component.InvokeAsync("Navbar")
+}
+@section Footer {
+    @await Component.InvokeAsync("Footer")
+}
+
+
+<div class="container-fluid bg-secondary mb-5">
+    <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
+        using Microsoft.EntityFrameworkCore.Metadata.Internal;
+        using iText.Forms.Xfdf;
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">Thanh toán</h1>
+        <div class="d-inline-flex">
+            <p class="m-0"><a href="">Trang chủ</a></p>
+            <p class="m-0 px-2">-</p>
+            <p class="m-0">Thanh toán</p>
+        </div>
+    </div>
+</div>
+<!-- Page Header End -->
+
+
+<!-- Checkout Start -->
+<div class="container-fluid pt-5">
+    <div class="row px-xl-5">
+        <div class="col-lg-8">
+            <div class="mb-4">
+                <h4 class="font-weight-semi-bold mb-4">Thông tin cá nhân
+                </h4>
+                <form id="carRental" asp-action="Checkout" asp-controller="Payment" enctype="multipart/form-data"
+                    method="post">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label>Họ và tên đầy đủ</label>
+                            <input class="form-control" asp-for="Profile.FullName" type="text" readonly>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Email</label>
+                            <input class="form-control" asp-for="Email" type="email" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Số điện thoại</label>
+                            <input class="form-control" asp-for="Profile.PhoneNumber" type="text" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Địa chỉ</label>
+                            <input class="form-control" asp-for="Profile.Address" type="text" required>
+                        </div>
+                        <div class="col-md-12 form-group">
+
+
+                            <div class="col-md-6 form-group">
+                                <label>TaxCode</label>
+                                <input class="form-control border-o" asp-for="TaxCode" type="text" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Ngày thuê</label>
+                            <input type="text" id="startDate" value="@Model.StartDate" asp-for="StartDate"
+                                class="form-control" readonly>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label>Ngày trả</label>
+                            <input type="text" id="endDate" value="@Model.EndDate" asp-for="EndDate"
+                                class="form-control" readonly>
+                        </div>
+
+                        <!-- Dropzone để gửi ảnh cùng form -->
+                        <div class="col-md-12">
+                            <label>Upload Images</label>
+                            <div>
+                                <img src="@Model.Profile.DrivingLicense" alt="Bằng lái xe">
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" value="@Model.CarViewModel.Car.Id" name="carId">
+                </form>
+            </div>
+
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-secondary mb-5">
+                <div class="card-header bg-secondary border-0">
+                    <h4 class="font-weight-semi-bold m-0">Tổng quan</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="font-weight-medium mb-3">Xe</h5>
+                    <div class="d-flex justify-content-between">
+                        <p>@Model.CarViewModel.Car.Model</p>
+                        <p>@Model.CarViewModel.Car.PricePerDay VND/Ngày</p>
+                    </div>
+                    <hr class="mt-0">
+                </div>
+                <div class="card-footer border-secondary bg-transparent">
+                    <div class="d-flex justify-content-between mt-2">
+                        <h5 class="font-weight-bold">Tổng giá</h5>
+                        <h5 class="font-weight-bold" id="webTotalPrice">@Model.TotalPrice</h5>
+                    </div>
+                    <hr />
+                </div>
+                <div>
+                    <button id="submitBtn" type="button" class="btn btn-primary btn-lg w-100 py-3">Thanh Toán</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Checkout End -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+@* 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let hasUserSelectedStartDate = false;
+        let lastSelectedTime = null;
+
+        function getFutureTime(minutes) {
+            let now = new Date();
+            now.setMinutes(now.getMinutes() + minutes);
+            now.setSeconds(0, 0);
+            return now;
+        }
+
+        let startPicker = flatpickr("#startDate", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: getFutureTime(10),
+            onChange: function (selectedDates) {
+                hasUserSelectedStartDate = true;
+                lastSelectedTime = selectedDates[0]; // Lưu thời gian người dùng đã chọn
+
+                let minEndDate = new Date(selectedDates[0].getTime() + 10 * 60000);
+                endPicker.set("minDate", minEndDate);
+
+                if (!endPicker.selectedDates.length || endPicker.selectedDates[0] < minEndDate) {
+                    endPicker.setDate(minEndDate);
+                }
+            }
+        });
+
+        let endPicker = flatpickr("#endDate", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            minDate: getFutureTime(20)
+        });
+    });
+</script> *@
+<script>
+    document.getElementById("submitBtn").addEventListener("click", function (event) {
+        document.getElementById("carRental").submit();
+    });
+</script>

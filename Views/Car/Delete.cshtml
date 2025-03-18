@@ -1,4 +1,4 @@
-@model CarViewModel
+@model Car_Rental_System.ViewModels.CarViewModel
 
 @{
     ViewData["Title"] = "Delete";
@@ -19,37 +19,37 @@
                 <div class="col-md-6">
                     <dl class="row">
                         <dt class="col-sm-5">Brand:</dt>
-                        <dd class="col-sm-7">@Model.Brand.Name</dd>
+                        <dd class="col-sm-7">@Model.Car.Brand.Name</dd>
 
                         <dt class="col-sm-5">Category:</dt>
-                        <dd class="col-sm-7">@Model.Category.Name</dd>
+                        <dd class="col-sm-7">@Model.Car.Category.Name</dd>
 
                         <dt class="col-sm-5">Model:</dt>
-                        <dd class="col-sm-7">@Model.Model</dd>
+                        <dd class="col-sm-7">@Model.Car.Model</dd>
 
                         <dt class="col-sm-5">Year:</dt>
-                        <dd class="col-sm-7">@Model.Year</dd>
+                        <dd class="col-sm-7">@Model.Car.Year</dd>
 
                         <dt class="col-sm-5">Price Per Day:</dt>
-                        <dd class="col-sm-7 text-danger fw-bold">@Model.PricePerDay$</dd>
+                        <dd class="col-sm-7 text-danger fw-bold">@Model.Car.PricePerDay$</dd>
 
                         <dt class="col-sm-5">License Plates:</dt>
-                        <dd class="col-sm-7">@Model.LicensePlates</dd>
+                        <dd class="col-sm-7">@Model.Car.LicensePlates</dd>
 
                         <dt class="col-sm-5">Kilometers:</dt>
-                        <dd class="col-sm-7">@Model.Kilometers km</dd>
+                        <dd class="col-sm-7">@Model.Car.Kilometers km</dd>
 
                         <dt class="col-sm-5">Fuel Type:</dt>
-                        <dd class="col-sm-7">@Model.FuelType</dd>
+                        <dd class="col-sm-7">@Model.Car.FuelType</dd>
 
                         <dt class="col-sm-5">Transmission:</dt>
-                        <dd class="col-sm-7">@Model.Transmission</dd>
+                        <dd class="col-sm-7">@Model.Car.Transmission</dd>
 
                         <dt class="col-sm-5">Seats:</dt>
-                        <dd class="col-sm-7">@Model.Seats seats</dd>
+                        <dd class="col-sm-7">@Model.Car.Seats seats</dd>
 
                          <dt class="col-sm-5">Status:</dt>
-                        <dd class="col-sm-7">@(Model.Availability ? "Active" : "Inactive")</dd>
+                        <dd class="col-sm-7">@(Model.Car.Status.ToString())</dd>
                     </dl>
                 </div>
                 <div class="col-md-6">
@@ -79,7 +79,7 @@
         
         <div class="card-footer text-center">
             <form asp-action="Delete">
-                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="Car.Id" />
                 <input type="submit" value="Delete" class="btn btn-danger" />
                 <a asp-action="Index" class="btn btn-secondary">Back to List</a>
             </form>

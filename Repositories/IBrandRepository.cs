@@ -1,18 +1,19 @@
 using Car_Rental_System.Models;
+using Car_Rental_System.ViewModels;
+using X.PagedList;
 
 namespace Car_Rental_System.Repositories;
 
 public interface IBrandRepository
 {
-    Task<(IEnumerable<Brand> Items, int TotalCount)> GetAllAsync(string searchString, int pageSize, int pageNumber, int status);
-    Task<IEnumerable<Brand>> GetAllAsync();
-    Task<IEnumerable<Brand>> GetAllAsync(bool status);
+    Task<IPagedList<BrandViewModel>> GetAllAsync(string searchString, int pageSize, int pageNumber );
+    Task<IEnumerable<BrandViewModel>> GetAllAsync();
+    Task<IEnumerable<Brand>> GetAllForListAsync(bool IsActive);
+    Task<BrandViewModel> GetByIdAsync(int id);
 
-    Task<Brand> GetByIdAsync(int id);
+    Task UpdateAsync(BrandViewModel brandViewModel);
 
-    Task UpdateAsync(Brand brand);
-
-    Task AddAsync(Brand brand);
+    Task AddAsync(BrandViewModel brandViewModel);
 
     Task DeleteAsync(int id);
 }

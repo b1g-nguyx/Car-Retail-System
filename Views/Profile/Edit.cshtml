@@ -1,0 +1,182 @@
+@model Car_Rental_System.ViewModels.profileViewModel
+
+@{
+    Layout = "_LayoutHome";
+    ViewData["Title"] = "Edit Profile";
+}
+
+<h2>Chỉnh sửa thông tin cá nhân</h2>
+<div class="container mt-4">
+    <form id="profileForm" asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="UserId" id="userId" />
+
+        <div class="mb-3">
+            <label asp-for="FullName" class="form-label">Họ và tên</label>
+            <input asp-for="FullName" class="form-control" required />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label">Địa chỉ</label>
+            <input asp-for="Address" class="form-control" required />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
+            <input asp-for="PhoneNumber" class="form-control" type="tel" required />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Giấy phép lái xe</p></label>
+
+            <!-- Hiển thị ảnh nếu có, mặc định nếu chưa có ảnh -->
+            <div class="mb-2">
+                <img id="previewImageDriving"
+                    src="@(!string.IsNullOrEmpty(Model.DrivingLicense) ? Model.DrivingLicense : "/images/default-avatar.png")"
+                    alt="DrivingLicense" class="img-thumbnail" width="150" style="cursor: pointer;" />
+            </div>
+
+            <!-- Input file ẩn -->
+            <input type="file" class="d-none" id="DrivingLicense" name="DrivingLicenseFiles" accept="image/*" />
+
+            <!-- Trường ẩn lưu URL ảnh (nếu backend yêu cầu) -->
+            <input type="hidden" asp-for="DrivingLicense" id="AvatarUrl" />
+
+            <span asp-validation-for="DrivingLicense" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Avatar</label>
+
+            <!-- Hiển thị ảnh nếu có, mặc định nếu chưa có ảnh -->
+            <div class="mb-2">
+                <img id="previewImage"
+                    src="@(!string.IsNullOrEmpty(Model.AvatarUrl) ? Model.AvatarUrl : "/images/default-avatar.png")"
+                    alt="Avatar" class="img-thumbnail" width="150" style="cursor: pointer;" />
+            </div>
+
+            <!-- Input file ẩn -->
+            <input type="file" class="d-none" id="AvatarFile" name="AvatarFiles" accept="image/*" />
+
+            <!-- Trường ẩn lưu URL ảnh (nếu backend yêu cầu) -->
+            <input type="hidden" asp-for="AvatarUrl" id="AvatarUrl" />
+
+            <span asp-validation-for="AvatarUrl" class="text-danger"></span>
+        </div>
+
+        <button type="submit" onclick="confirmSave(event)" class="btn btn-success">Lưu thay đổi</button>
+        <a href="javascript:void(0);" onclick="confirmBack()" class="btn btn-secondary">Quay lại</a>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let form = document.getElementById("profileForm");
+
+            if (!form) {
+                console.error("Không tìm thấy form với id='profileForm'");
+                return;
+            }
+
+            let initialFormData = JSON.stringify(Object.fromEntries(new FormData(form)));
+
+            function isDataChanged() {
+                let currentFormData = JSON.stringify(Object.fromEntries(new FormData(form)));
+                return initialFormData !== currentFormData;
+            }
+
+            window.confirmBack = function () {
+                let userId = document.getElementById("userId").value;
+                if (isDataChanged()) {
+                    Swal.fire({
+                        title: "Dữ liệu chưa lưu!",
+                        text: "Bạn có chắc chắn muốn rời đi? Những thay đổi sẽ không được lưu.",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Rời đi",
+                        cancelButtonText: "Hủy"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '@Url.Action("Index", "Profile")' + "?UserId=" + encodeURIComponent(userId);
+                        }
+                    });
+                } else {
+                    window.location.href = '@Url.Action("Index", "Profile")' + "?UserId=" + encodeURIComponent(userId);
+                }
+            };
+
+            window.confirmSave = function (event) {
+                event.preventDefault(); // Ngăn form submit ngay lập tức
+
+                if (!form.checkValidity()) {
+                    form.reportValidity(); // Hiển thị lỗi validation mặc định của trình duyệt
+                    return;
+                }
+
+                Swal.fire({
+                    title: "Xác nhận lưu?",
+                    text: "Bạn có chắc chắn muốn lưu các thay đổi không?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Lưu",
+                    cancelButtonText: "Hủy"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            };
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            let previewImage = document.getElementById("previewImageDriving");
+            let fileInput = document.getElementById("DrivingLicense");
+            let avatarUrl = document.getElementById("DrivingLicense");
+
+            // Click vào ảnh sẽ mở hộp thoại chọn file
+            previewImage.addEventListener("click", function () {
+                fileInput.click();
+            });
+
+            // Khi chọn ảnh mới
+            fileInput.addEventListener("change", function (event) {
+                let file = event.target.files[0];
+
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let previewImage = document.getElementById("previewImage");
+            let fileInput = document.getElementById("AvatarFile");
+            let avatarUrl = document.getElementById("AvatarUrl");
+
+            // Click vào ảnh sẽ mở hộp thoại chọn file
+            previewImage.addEventListener("click", function () {
+                fileInput.click();
+            });
+
+            // Khi chọn ảnh mới
+            fileInput.addEventListener("change", function (event) {
+                let file = event.target.files[0];
+
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+}

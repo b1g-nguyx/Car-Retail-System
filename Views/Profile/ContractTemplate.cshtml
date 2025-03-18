@@ -1,0 +1,145 @@
+@model Car_Rental_System.Models.Contract
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .contract-container {
+            padding: 30px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            margin-left: 30px;
+        }
+
+        .signature-container {
+            display: table;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .signature-box {
+            display: table-cell;
+            width: 40%;
+            text-align: center;
+            vertical-align: top;
+            padding: 10px;
+            border-top: 1px solid #000;
+        }
+
+        .signature-box img {
+            max-width: 100px;
+            height: 100px;
+            margin-top: 10px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contract-container">
+        <h1>HỢP ĐỒNG THUÊ XE</h1>
+
+        <div class="section">
+            <p><b>Bên cho thuê (Công ty):</b> Công ty TNHH Thuê Xe X</p>
+            <p><b>Địa chỉ:</b> 123 Đường A, Quận b, TP.C</p>
+            <p><b>Điện thoại:</b> 0123 456 789</p>
+            <p><b>Email:</b> contact@thuexeX.com</p>
+        </div>
+
+        <div class="section">
+            <p><b>Bên thuê xe:</b> @Model.FullName</p>
+            <p><b>Địa chỉ:</b> @Model.Address</p>
+            <p><b>Email:</b> @Model.Email</p>
+            <p><b>Điện thoại:</b> @Model.PhoneNumber</p>
+            <p><b>Mã số thuế (nếu có):</b> @Model.TaxCode</p>
+        </div>
+
+        <div class="section">
+            <p><b>Điều 1: Nội dung hợp đồng</b></p>
+            <p>Bên A đồng ý cho Bên B thuê xe với các thông tin sau:</p>
+            <ul>
+                <li><b>Thời gian thuê:</b> Từ ngày @Model.StartDate đến ngày @Model.EndDate</li>
+                <li><b>Giá thuê:</b> @Model.TotalPrice VND</li>
+                <li><b>Tiền đặt cọc:</b> @Model.Deposit VND</li>
+                <li><b>Hình thức thanh toán:</b> Chuyển khoản</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <p><b>Điều 2: Trách nhiệm của các bên</b></p>
+            <p><b>Bên cho thuê (Bên A):</b></p>
+            <ul>
+                <li>Cung cấp xe đúng thời gian, đảm bảo tình trạng xe tốt.</li>
+                <li>Hỗ trợ khách hàng trong quá trình sử dụng.</li>
+            </ul>
+            <p><b>Bên thuê xe (Bên B):</b></p>
+            <ul>
+                <li>Chịu trách nhiệm bảo quản xe trong thời gian thuê.</li>
+                <li>Không sử dụng xe vào mục đích trái pháp luật.</li>
+                <li>Hoàn trả xe đúng thời gian quy định.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <p><b>Điều 3: Hiệu lực hợp đồng</b></p>
+            <p>Hợp đồng có hiệu lực từ ngày ký và kết thúc sau khi Bên B hoàn thành nghĩa vụ trả xe và thanh toán đầy
+                đủ.</p>
+        </div>
+
+        <div class="signature-container">
+            <div class="signature-box">
+                <p><b>Đại diện bên cho thuê</b></p>
+                <p>(Ký và ghi rõ họ tên)</p>
+                @if (!string.IsNullOrEmpty(Model.SignatureImage))
+                {
+                    <img src="https://th.bing.com/th/id/OIP.O9fDGRT7BhBBSWQeBdp6HgHaI4?w=150&h=180&c=7&r=0&o=5&pid=1.7">
+                }
+                else
+                {
+                    <img src="https://thuthuatnhanh.com/wp-content/uploads/2022/05/background-trang-tinh.jpg" width="100%"
+                        height="100%">
+                }
+                <p>Đại diện công ty X </p>
+            </div>
+            <div class="signature-box">
+                <p><b>Khách hàng</b></p>
+                <p>(Ký và ghi rõ họ tên)</p>
+                @if (!string.IsNullOrEmpty(Model.SignatureImage))
+                {
+                    <img src="@Model.SignatureImage" alt="Chữ ký khách hàng">
+                }
+                else
+                {
+                    <img src="https://thuthuatnhanh.com/wp-content/uploads/2022/05/background-trang-tinh.jpg" width="100%"
+                        height="100%">
+                }
+                <p>@Model.FullName</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

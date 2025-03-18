@@ -2,6 +2,8 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Car_Rental_System.Models;
 using Car_Rental_System.Repositories;
+using Car_Rental_System.Utils;
+using Car_Rental_System.ViewModels;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
@@ -15,6 +17,7 @@ public class CarRepository : ICarRepository
     private readonly IImageRepository _iimageRepository;
     private readonly ICategoryRepository _icategoryRepository;
     private readonly IBrandRepository _ibrandRepository;
+  
     public CarRepository(UnitOfWork unitOfWork, IImageRepository imageRepository, ICategoryRepository categoryRepository, IBrandRepository brandRepository)
     {
         _icategoryRepository = categoryRepository;
@@ -27,13 +30,13 @@ public class CarRepository : ICarRepository
         var car = CarConvert(carViewModel);
         await _unitOfWork._carRepository.AddAsync(car);
         await _unitOfWork.SaveChangesAsync();
-        await _iimageRepository.AddAsync(carViewModel.files, car.Id, Constants.Constants.car);
+        await _iimageRepository.AddAsync(carViewModel.files, car.Id, Constant.car);
     }
 
     public async Task DeleteAsync(int id)
     {
         var item = await _unitOfWork._carRepository.GetByIdAsync(id);
-        await _iimageRepository.DeleteAsync(item!.Id, Constants.Constants.car);
+        await _iimageRepository.DeleteAsync(item!.Id, Constant.car);
         _unitOfWork._carRepository.Remove(item);
         await _unitOfWork.SaveChangesAsync();
     }
@@ -93,9 +96,9 @@ public class CarRepository : ICarRepository
         return carViewModels;
     }
 
-    public async Task<IEnumerable<CarViewModel>> GetAllAsync(bool status)
+    public async Task<IEnumerable<CarViewModel>> GetAllAsync(int status)
     {
-        IEnumerable<Car> cars = await _unitOfWork._carRepository.GetManyAsync(c => c.Availability == status);
+        IEnumerable<Car> cars = await _unitOfWork._carRepository.GetManyAsync(c => (int)c.Status == status);
         List<CarViewModel> carViewModels = new List<CarViewModel>();
 
         foreach (var item in cars)
@@ -109,8 +112,8 @@ public class CarRepository : ICarRepository
     public async Task<CarViewModel> GetByIdAsync(int id)
     {
         var car = await _unitOfWork._carRepository.GetByIdAsync(id);
-        var carViewModel = new CarViewModel();
-        carViewModel = await ViewModelConvertToModel(car!);
+
+        var carViewModel = await ViewModelConvertToModel(car!);
         return carViewModel;
     }
 
@@ -118,31 +121,14 @@ public class CarRepository : ICarRepository
     {
         _unitOfWork._carRepository.Update(CarConvert(car));
         await _unitOfWork.SaveChangesAsync();
-        await _iimageRepository.AddAsync(car.files, car.Id, Constants.Constants.car);
+        await _iimageRepository.AddAsync(car.files, car.Car.Id, Constant.car);
 
 
     }
 
     public Car CarConvert(CarViewModel carViewModel)
     {
-        var car = new Car
-        {
-            Id = carViewModel.Id,
-            CategoryId = carViewModel.Category.Id,
-            Category = carViewModel.Category,
-            Brand = carViewModel.Brand,
-            BrandId = carViewModel.Brand.Id,
-            Availability = carViewModel.Availability,
-            Description = carViewModel.Description,
-            PricePerDay = carViewModel.PricePerDay,
-            FuelType = carViewModel.FuelType,
-            Kilometers = carViewModel.Kilometers,
-            LicensePlates = carViewModel.LicensePlates,
-            Model = carViewModel.Model,
-            Seats = carViewModel.Seats,
-            Transmission = carViewModel.Transmission,
-            Year = carViewModel.Year
-        };
+        var car = carViewModel.Car;
         return car;
     }
     public async Task<CarViewModel> ViewModelConvertToModel(Car car)
@@ -151,32 +137,21 @@ public class CarRepository : ICarRepository
 
         var carViewModel = new CarViewModel
         {
-            Id = car.Id,
-            Availability = car.Availability,
-            Description = car.Description,
-            FuelType = car.FuelType,
-            Kilometers = car.Kilometers,
-            LicensePlates = car.LicensePlates,
-            PricePerDay = car.PricePerDay,
-            Model = car.Model,
-            Seats = car.Seats,
-            Transmission = car.Transmission,
-            Year = car.Year,
-            BrandId = car.BrandId,
-            CategoryId = car.CategoryId
+            Car = car
 
         };
-
-        carViewModel.Category = await _icategoryRepository.GetByIdAsync(car.CategoryId);
-        carViewModel.Brand = await _ibrandRepository.GetByIdAsync(car.BrandId);
-        carViewModel.Images = await _iimageRepository.GetAllByIdRelationId(car!.Id, Constants.Constants.car);
+        var Category = await _icategoryRepository.GetByIdAsync(car.CategoryId);
+        var Brand = await _ibrandRepository.GetByIdAsync(car.BrandId);
+        carViewModel.Car.Category = Category.Category;
+        carViewModel.Car.Brand = Brand.Brand;
+        carViewModel.Images = await _iimageRepository.GetAllByIdRelationId(car!.Id, Constant.car);
 
         return carViewModel;
     }
 
-    public async Task<IEnumerable<CarViewModel>> GetCarByQuantityAsync(int quantity)
+    public async Task<IEnumerable<CarViewModel>> GetByTopAsync()
     {
-        var query = _unitOfWork._carRepository.GetQueryable().Take(quantity);
+        var query = _unitOfWork._carRepository.GetQueryable(c => (int)c.Status == 0, allowTracking: true).Take(6);
         var result = await query.ToListAsync();
         List<CarViewModel> carViewModels = new List<CarViewModel>();
 
@@ -186,5 +161,71 @@ public class CarRepository : ICarRepository
             carViewModels.Add(car);
         }
         return carViewModels;
+    }
+
+    public async Task<IPagedList<CarViewModel>> GetAllAsync(string searchString, int PageNumber, int PageSize, string Sort, decimal MinPrice, decimal MaxPrice, List<int> BrandIds, int categoryId, DateTime StartDate, DateTime EndDate)
+    {
+        Expression<Func<Car, bool>> filter = PredicateBuilder.New<Car>(true);
+
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            filter = filter.And(c => c.Description!.Contains(searchString)
+                                  || c.Model!.Contains(searchString)
+                                  || c.FuelType!.Contains(searchString));
+        }
+
+        if (int.TryParse(searchString, out int year))
+        {
+            filter = filter.Or(c => c.Year >= year);
+        }
+
+        if (MinPrice > 0 || MaxPrice > 0 && MaxPrice >= MinPrice)
+        {
+            filter = filter.And(c => c.PricePerDay >= (MinPrice > 0 ? MinPrice : 0)
+                              && c.PricePerDay <= (MaxPrice > 0 ? MaxPrice : decimal.MaxValue));
+        }
+
+        if (BrandIds != null && BrandIds.Any())
+        {
+            filter = filter.And(c => BrandIds.Contains(c.BrandId));
+        }
+
+        if (categoryId > 0)
+        {
+            filter = filter.And(c => c.CategoryId == categoryId);
+        }
+
+        // Lấy danh sách các xe đã được thuê trong khoảng StartDate - EndDate
+        var rentedCarIds = _unitOfWork._carRetailRepository.GetQueryable(crd =>
+            crd.StartDate < EndDate && crd.EndDate > StartDate, allowTracking: true)
+            .Select(crd => crd.CarId);
+
+        // Lọc các xe không nằm trong danh sách đã thuê
+        filter = filter.And(c => !rentedCarIds.Contains(c.Id));
+
+        var totalCount = await _unitOfWork._carRepository.GetQueryable()
+                                .Where(filter).CountAsync();
+
+        var query = _unitOfWork._carRepository.GetQueryable(filter, allowTracking: true);
+
+        query = Sort?.ToLower() switch
+        {
+            "asc" => query.OrderBy(c => c.CreatedAt),
+            "desc" => query.OrderByDescending(c => c.CreatedAt),
+            _ => query.OrderBy(c => c.Model)
+        };
+
+        query = query.Skip((PageNumber - 1) * PageSize).Take(PageSize);
+
+        List<CarViewModel> carViewModels = new List<CarViewModel>();
+        var result = await query.ToListAsync();
+        foreach (var item in result)
+        {
+            var car = await ViewModelConvertToModel(item);
+            carViewModels.Add(car);
+        }
+
+        return new StaticPagedList<CarViewModel>(carViewModels, PageNumber, PageSize, totalCount);
+
     }
 }

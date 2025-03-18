@@ -1,120 +1,153 @@
-@model CarViewModel
+@model Car_Rental_System.ViewModels.CarViewModel
 
 @{
+    Layout = "_LayoutDashboard";
     ViewData["Title"] = "Create";
 }
 
-<h1 class="text-center mb-4">Create Car</h1>
 
-<div class="card shadow-lg p-4">
-    <div class="card-body">
-        <h4 class="card-title text-primary">Car Information</h4>
-        <hr />
+<h1 class="text-center mb-4 text-2xl font-bold">Create Car</h1>
 
-        <form id="carForm" asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+<div class="bg-white shadow-lg rounded-lg p-6">
+    <div>
+        <h4 class="text-lg font-semibold text-blue-600">Car Information</h4>
+        <hr class="my-4 border-gray-300" />
 
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label asp-for="BrandId" class="form-label fw-bold"></label>
-                    <select asp-for="BrandId" class="form-select"
+        <form id="carForm" asp-action="Create" enctype="multipart/form-data" class="space-y-4">
+            <div asp-validation-summary="ModelOnly" class="text-red-600"></div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label asp-for="Car.BrandId" class="block font-semibold"></label>
+                    <select asp-for="Car.BrandId" class="w-full p-2 border border-gray-300 rounded-md"
                         asp-items="@(new SelectList(Model.Brands, "Id", "Name"))"></select>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="CategoryId" class="form-label fw-bold"></label>
-                    <select asp-for="CategoryId" class="form-select"
+                <div>
+                    <label asp-for="Car.CategoryId" class="block font-semibold"></label>
+                    <select asp-for="Car.CategoryId" class="w-full p-2 border border-gray-300 rounded-md"
                         asp-items="@(new SelectList(Model.Categories, "Id", "Name"))"></select>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Model" class="form-label fw-bold"></label>
-                    <input asp-for="Model" class="form-control" />
-                    <span asp-validation-for="Model" class="text-danger"></span>
+                <div>
+                    <label asp-for="Car.Model" class="block font-semibold"></label>
+                    <input asp-for="Car.Model" class="w-full p-2 border border-gray-300 rounded-md" />
+                    <span asp-validation-for="Car.Model" class="text-red-600"></span>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Year" class="form-label fw-bold"></label>
-                    <input asp-for="Year" class="form-control" />
-                    <span asp-validation-for="Year" class="text-danger"></span>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label asp-for="PricePerDay" class="form-label fw-bold"></label>
-                    <input asp-for="PricePerDay" class="form-control" />
-                    <span asp-validation-for="PricePerDay" class="text-danger"></span>
+                <div>
+                    <label asp-for="Car.Year" class="block font-semibold"></label>
+                    <input asp-for="Car.Year" type="number" class="w-full p-2 border border-gray-300 rounded-md"
+                        placeholder="2025" />
+                    <span asp-validation-for="Car.Year" class="text-red-600"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Availability" class="form-label fw-bold">Status</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="Availability" value="true" checked />
-                        <label class="form-check-label">Active</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" asp-for="Availability" value="false" />
-                        <label class="form-check-label">Inactive</label>
+                <div>
+                    <label asp-for="Car.PricePerDay" class="block font-semibold"></label>
+                    <input asp-for="Car.PricePerDay" placeholder="1.200.000"
+                        class="w-full p-2 border border-gray-300 rounded-md" />
+                    <span asp-validation-for="Car.PricePerDay" class="text-red-600"></span>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-4">
+                        <label asp-for="Car.Status" class="block font-semibold"></label>
+                        <select asp-for="Car.Status" class="w-full p-2 border border-gray-300 rounded-md"
+                            asp-items="Model.RentalStatuses"></select>
                     </div>
                 </div>
 
-                <div class="col-md-12 mb-3">
-                    <label asp-for="Description" class="form-label fw-bold"></label>
-                    <textarea asp-for="Description" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="Description" class="text-danger"></span>
+                <div class="col-span-2">
+                    <label asp-for="Car.Description" class="block font-semibold"></label>
+                    <textarea asp-for="Car.Description"  name="Car.Description"
+                        class="w-full p-2 border border-gray-300 rounded-md" rows="3"></textarea>
+                    <span asp-validation-for="Car.Description" class="text-red-600"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="LicensePlates" class="form-label fw-bold"></label>
-                    <input asp-for="LicensePlates" class="form-control" />
-                    <span asp-validation-for="LicensePlates" class="text-danger"></span>
+                <div>
+                    <label asp-for="Car.LicensePlates" class="block font-semibold"></label>
+                    <input asp-for="Car.LicensePlates" placeholder="21A-11111"
+                        class="w-full p-2 border border-gray-300 rounded-md" />
+                    <span asp-validation-for="Car.LicensePlates" class="text-red-600"></span>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Kilometers" class="form-label fw-bold"></label>
-                    <input asp-for="Kilometers" class="form-control" />
-                    <span asp-validation-for="Kilometers" class="text-danger"></span>
+                <div>
+                    <label asp-for="Car.Kilometers" class="block font-semibold"></label>
+                    <input asp-for="Car.Kilometers" placeholder="12345"
+                        class="w-full p-2 border border-gray-300 rounded-md" />
+                    <span asp-validation-for="Car.Kilometers" class="text-red-600"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="FuelType" class="form-label fw-bold"></label>
-                    <select asp-for="FuelType" class="form-select">
+                <div>
+                    <label asp-for="Car.FuelType" class="block font-semibold"></label>
+                    <select asp-for="Car.FuelType" class="w-full p-2 border border-gray-300 rounded-md">
                         <option value="">Select Fuel Type</option>
                         <option value="Gasoline">Gasoline</option>
                         <option value="Diesel">Diesel</option>
                         <option value="Electric">Electric</option>
                         <option value="Hybrid">Hybrid</option>
                     </select>
-                    <span asp-validation-for="FuelType" class="text-danger"></span>
+                    <span asp-validation-for="Car.FuelType" class="text-red-600"></span>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Transmission" class="form-label fw-bold"></label>
-                    <select asp-for="Transmission" class="form-select">
+                <div>
+                    <label asp-for="Car.Transmission" class="block font-semibold"></label>
+                    <select asp-for="Car.Transmission" class="w-full p-2 border border-gray-300 rounded-md">
                         <option value="">Select Transmission</option>
                         <option value="Automatic">Automatic</option>
                         <option value="Manual">Manual</option>
                     </select>
-                    <span asp-validation-for="Transmission" class="text-danger"></span>
+                    <span asp-validation-for="Car.Transmission" class="text-red-600"></span>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                    <label asp-for="Seats" class="form-label fw-bold"></label>
-                    <input asp-for="Seats" class="form-control" />
-                    <span asp-validation-for="Seats" class="text-danger"></span>
+                <div>
+                    <label asp-for="Car.Seats" class="block font-semibold"></label>
+                    <input asp-for="Car.Seats" placeholder="4" class="w-full p-2 border border-gray-300 rounded-md" />
+                    <span asp-validation-for="Car.Seats" class="text-red-600"></span>
                 </div>
 
-                <!-- Dropzone Upload Images -->
-                <div class="col-md-12 mb-3">
-                    <label class="form-label fw-bold">Upload Images</label>
-                    <div id="dropzoneForm" class="dropzone border rounded p-3 text-center">
-                        <div class="dz-message">Drag and drop files here or click to upload</div>
+                <div class="col-span-2">
+                    <label class="block font-semibold">Upload Images</label>
+                    <div id="dropzoneForm"
+                        class="dropzone border border-dashed border-gray-300 rounded-md p-4 text-center">
+
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between mt-3">
-                <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
-                <button type="submit" class="btn btn-primary">Create</button>
+            <div class="flex justify-between mt-4">
+                <a asp-action="Index"
+                    class="px-4 py-2 border border-gray-400 rounded-md text-gray-600 hover:bg-gray-100">Back to List</a>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Create</button>
             </div>
         </form>
     </div>
 </div>
+
+<!-- Place the first <script> tag in your HTML's <head> -->
+<script src="https://cdn.tiny.cloud/1/8frck4q2kk9c85j655m6akj55jkjryl3mc9dg2mj7qbshpua/tinymce/7/tinymce.min.js"
+    referrerpolicy="origin"></script>
+
+<!-- Place the following <script> and <textarea> tags your HTML's <body> -->
+<script>
+    tinymce.init({
+        selector: 'textarea',
+        plugins: [
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+            'checklist', 'mediaembed', 'casechange', 'export', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+        ],
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+        ],
+        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant'))
+    });
+
+    // Đảm bảo TinyMCE cập nhật nội dung vào textarea trước khi submit form
+    document.getElementById("carForm").addEventListener("submit", function () {
+        tinymce.triggerSave();
+    });
+</script>
 
 <!-- Dropzone.js -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/min/dropzone.min.css">
@@ -144,12 +177,12 @@
                     method: "POST",
                     body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
-                    alert("Car created successfully!");
-                    window.location.href = "/Car/Index";
-                })
-                .catch(error => console.error("Error:", error));
+                    .then(response => response.json())
+                    .then(data => {
+                        alert("Car created successfully!");
+                        window.location.href = "/Car/Index";
+                    })
+                    .catch(error => console.error("Error:", error));
             });
 
             dz.on("addedfile", function (file) {
